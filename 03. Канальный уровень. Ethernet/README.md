@@ -71,8 +71,12 @@ S1(config)#enable secret class
 S1(config)#line vty 0 15
 S1(config-line)#password cisco
 S1(config-line)#login
-S1(config)#service password-encryption 
-S1(config)#exit
+S1(config)#service password-encryption
+S1#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+S1#reload
 ```
 
 ```shell
@@ -85,6 +89,10 @@ S2(config)#enable secret class
 S2(config)#line vty 0 15
 S2(config-line)#password cisco
 S2(config-line)#login
-S2(config)#service password-encryption 
-S2(config)#exit
+S2(config)#service password-encryption
+S2#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+S2#reload
 ```
