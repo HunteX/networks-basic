@@ -349,4 +349,4 @@ Approximate round trip times in milli-seconds:
 
 > Какой идентификатор подсети в индивидуальном IPv6-адресе 2001:db8:acad::aaaa:1234/64?
 
-2001:0db8:acad:0000
+0000
