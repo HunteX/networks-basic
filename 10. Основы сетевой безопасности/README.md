@@ -19,6 +19,8 @@
 
 # <a name="part1"></a>Часть 1. Настройка основных параметров устройства
 
+## Настройте маршрутизатор.
+
 > * Подключитесь к маршрутизатору с помощью консоли и активируйте привилегированный режим EXEC.
 > * Войдите в режим конфигурации.
 > * Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.
@@ -60,6 +62,31 @@ R1#copy running-config startup-config
 Destination filename [startup-config]? 
 Building configuration...
 [OK]
+```
+
+## Настройте компьютер PC-A.
+> * Настройте для PC-A IP-адрес и маску подсети.
+> * Настройте для PC-A шлюз по умолчанию.
+
+Выполнено.
+
+## Проверьте подключение к сети.
+> Пошлите с PC-A команду Ping на маршрутизатор R1. Если эхо-запрос с помощью команды ping не проходит, найдите и устраните неполадки подключения.
+
+```shell
+C:\>ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
 ```
 
 # <a name="part2"></a>Часть 2. Настройка маршрутизатора для доступа по протоколу SSH
