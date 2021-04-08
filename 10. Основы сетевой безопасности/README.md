@@ -91,18 +91,59 @@ Approximate round trip times in milli-seconds:
 
 # <a name="part2"></a>Часть 2. Настройка маршрутизатора для доступа по протоколу SSH
 ## Настройте аутентификацию устройств.
+> * Задайте имя устройства.
+> * Задайте домен для устройства
 
+```shell
+R1(config)#ip domain name domain.local
+```
 
 ## Создайте ключ шифрования с указанием его длины.
 
+```shell
+R1(config)#crypto key generate rsa general-keys modulus 2048
+The name for the keys will be: R1.domain.local
+
+% The key modulus size is 2048 bits
+% Generating 2048 bit RSA keys, keys will be non-exportable...[OK]
+*Mar 1 2:12:23.689: %SSH-5-ENABLED: SSH 1.99 has been enabled
+```
+
 ## Создайте имя пользователя в локальной базе учетных записей.
+
+```shell
+R1(config)#username admin privilege 15 secret Adm1nP@55
+```
 
 ## Активируйте протокол SSH на линиях VTY.
 
+```shell
+R1(config)#ip ssh version 2
+R1(config)#line vty 0 15
+R1(config-line)#transport input ssh
+R1(config-line)#login local
+```
+
 ## Сохраните текущую конфигурацию в файл загрузочной конфигурации.
+
+```shell
+R1#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+```
 
 ## Установите соединение с маршрутизатором по протоколу SSH.
 
+```shell
+C:\>ssh -l admin 192.168.1.1
+
+Password: 
+
+restricted area!
+
+R1#
+```
 
 # <a name="part3"></a>Часть 3. Настройка коммутатора для доступа по протоколу SSH
 
