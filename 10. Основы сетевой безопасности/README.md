@@ -120,7 +120,7 @@ R1(config)#username admin privilege 15 secret Adm1nP@55
 ```shell
 R1(config)#ip ssh version 2
 R1(config)#line vty 0 15
-R1(config-line)#transport input ssh
+R1(config-line)#transport input all
 R1(config-line)#login local
 ```
 
@@ -146,5 +146,102 @@ R1#
 ```
 
 # <a name="part3"></a>Часть 3. Настройка коммутатора для доступа по протоколу SSH
+## Настройте основные параметры коммутатора.
+> * Подключитесь к коммутатору с помощью консольного подключения и активируйте привилегированный режим EXEC.
+> *	Войдите в режим конфигурации.
+> *	Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.
+> *	Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.
+> *	Назначьте cisco в качестве пароля консоли и включите вход в систему по паролю.
+> *	Назначьте cisco в качестве пароля VTY и включите вход в систему по паролю.
+> *	Зашифруйте открытые пароли.
+> *	Создайте баннер, который предупреждает о запрете несанкционированного доступа.
+> * Настройте и активируйте на коммутаторе интерфейс VLAN 1, используя информацию, приведенную в таблице адресации.
+> *	Сохраните текущую конфигурацию в файл загрузочной конфигурации.
+
+```shell
+Switch>enable
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#no ip domain-lookup
+Switch(config)#enable secret class
+Switch(config)#line vty 0 15
+Switch(config-line)#password cisco
+Switch(config-line)#login
+Switch(config-line)#exit
+Switch(config)#line console 0
+Switch(config-line)#password cisco
+Switch(config-line)#login
+Switch(config-line)#exit
+Switch(config)#service password-encryption
+Switch(config)#banner motd @restricted area!@
+Switch(config)#interface Vlan 1
+Switch(config-if)#ip address 192.168.1.11 255.255.255.0
+Switch(config-if)#no sh
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+```
+
+## Настройте коммутатор для соединения по протоколу SSH.
+
+```shell
+Switch>enable
+Switch#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#no ip domain-lookup
+Switch(config)#enable secret class
+Switch(config)#line vty 0 15
+Switch(config-line)#password cisco
+Switch(config-line)#login
+Switch(config-line)#exit
+Switch(config)#line console 0
+Switch(config-line)#password cisco
+Switch(config-line)#login
+Switch(config-line)#exit
+Switch(config)#service password-encryption
+Switch(config)#banner motd @restricted area!@
+Switch(config)#interface Vlan 1
+Switch(config-if)#ip address 192.168.1.11 255.255.255.0
+Switch(config-if)#no sh
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+Switch#conf t
+Switch(config)#hostname S1
+S1(config)#ip domain name domain.local
+S1(config)#crypto key generate rsa general-keys modulus 2048
+The name for the keys will be: S1.domain.local
+
+% The key modulus size is 2048 bits
+% Generating 2048 bit RSA keys, keys will be non-exportable...[OK]
+*Mar 1 0:8:32.783: %SSH-5-ENABLED: SSH 1.99 has been enabled
+S1(config)#username admin privilege 15 secret Adm1nP@55
+S1(config)#ip ssh version 2
+S1(config)#line vty 0 15
+S1(config-line)#transport input all
+S1(config-line)#login local
+```
+
+## Установите соединение с коммутатором по протоколу SSH.
+
+```shell
+C:\>ssh -l admin 192.168.1.11
+
+Password: 
+% Login invalid
+
+
+Password: 
+
+restricted area!
+
+S1#
+```
 
 # <a name="part4"></a>Часть 4. SSH через интерфейс командной строки (CLI) коммутатора
