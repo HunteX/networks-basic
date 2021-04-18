@@ -31,7 +31,7 @@
 | 10            | Управление         | S1: VLAN 10<br>S2: VLAN 10                                    |
 | 20            | Sales              | S1: F0/6                                                      |
 | 30            | Operations         | S2: F0/18                                                     |
-| 999           | Parking_Lot        | C1: F0/2-4, F0/7-24, G0/1-2<br>C2: F0/2-17, F0/19-24, G0/1-2  |
+| 999           | Parking_Lot        | S1: F0/2-4, F0/7-24, G0/1-2<br>S2: F0/2-17, F0/19-24, G0/1-2  |
 | 1000          | Собственная        | -                                                             |
 
 # <a name="part1"></a>Часть 1. Создание сети и настройка основных параметров устройства
@@ -141,6 +141,163 @@ Building configuration...
 Готово
 
 # <a name="part2"></a>Часть 2. Создание сетей VLAN и назначение портов коммутатора
+## Создайте сети VLAN на коммутаторах.
+> Создайте и назовите необходимые VLAN на каждом коммутаторе из таблицы выше.
+
+```shell
+Authorized Access Only!
+
+User Access Verification
+
+Password: 
+S1>enable
+Password: 
+S1#
+S1#configure terminal
+S1(config)#vlan 10
+S1(config-vlan)#name Management
+S1(config-vlan)#vlan 20
+S1(config-vlan)#name Sales
+S1(config-vlan)#vlan 30
+S1(config-vlan)#name Operations
+S1(config-vlan)#vlan 999
+S1(config-vlan)#name Parking_Lot
+S1(config-vlan)#vlan 1000
+S1(config-vlan)#name Own
+```
+
+```shell
+Authorized Access Only!
+
+User Access Verification
+
+Password: 
+
+S2>enable
+Password: 
+S2#configure terminal
+S2(config)#vlan 10
+S2(config-vlan)#name Management
+S2(config-vlan)#vlan 20
+S2(config-vlan)#name Sales
+S2(config-vlan)#vlan 30
+S2(config-vlan)#name Operations
+S2(config-vlan)#vlan 999
+S2(config-vlan)#name Parking_lot
+S2(config-vlan)#vlan 1000
+S2(config-vlan)#name Own
+```
+
+> Настройте интерфейс управления и шлюз по умолчанию на каждом коммутаторе, используя информацию об IP-адресе в таблице адресации.
+
+```shell
+S1(config)#interface Vlan 10
+S1(config-if)#ip address 192.168.10.11 255.255.255.0
+S1(config-if)#exit
+S1(config)#ip default-gateway 192.168.10.1
+```
+
+```shell
+S2(config)#interface Vlan 10
+S2(config-if)#ip address 192.168.10.12 255.255.255.0
+S2(config-if)#exit
+S2(config)#ip default-gateway 192.168.10.1
+```
+
+> Назначьте все неиспользуемые порты коммутатора VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их.
+
+```shell
+S1(config)#interface range f0/2-4
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+S1(config-if-range)#interface range f0/7-24
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+S1(config-if-range)#interface range g0/1-2
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+```
+
+```shell
+S2(config)#interface range f0/2-17
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+S2(config-if-range)#interface range f0/19-24
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+S2(config-if-range)#interface range g0/1-2
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+```
+
+## Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+
+> Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
+
+```shell
+S1(config)#int f0/6
+S1(config-if)#switchport mode access
+S1(config-if)#switchport access vlan 20
+
+```
+
+```shell
+S2(config)#int f0/18
+S2(config-if)#switchport mode access
+S2(config-if)#switchport access vlan 30
+```
+
+> Убедитесь, что VLAN назначены на правильные интерфейсы.
+
+```shell
+S1(config)#do show vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/5
+10   Management                       active    
+20   Sales                            active    Fa0/6
+30   Operations                       active    
+999  Parking_Lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11
+                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15
+                                                Fa0/16, Fa0/17, Fa0/18, Fa0/19
+                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23
+                                                Fa0/24, Gig0/1, Gig0/2
+1000 Own                              active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+```
+
+```shell
+S2(config-if)#do sh vlan br
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1
+10   Management                       active    
+20   Sales                            active    
+30   Operations                       active    Fa0/18
+999  Parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/5
+                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9
+                                                Fa0/10, Fa0/11, Fa0/12, Fa0/13
+                                                Fa0/14, Fa0/15, Fa0/16, Fa0/17
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2
+1000 Own                              active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+```
 
 # <a name="part3"></a>Часть 3. Настройка транка 802.1Q между коммутаторами
 
