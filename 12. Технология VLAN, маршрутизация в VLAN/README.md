@@ -301,7 +301,124 @@ VLAN Name                             Status    Ports
 
 # <a name="part3"></a>Часть 3. Настройка транка 802.1Q между коммутаторами
 
+## Вручную настройте магистральный интерфейс F0/1 на коммутаторах S1 и S2.
 
+> Настройка статического транкинга на интерфейсе F0/1 для обоих коммутаторов.
+> Установите native VLAN 1000 на обоих коммутаторах.
+
+```shell
+S1(config)#interface f0/1
+S1(config-if)#switchport trunk native vlan 1000
+S1(config-if)#switchport mode trunk
+```
+
+```shell
+S2(config)#interface f0/1
+S2(config-if)#switchport trunk native vlan 1000
+S2(config-if)#switchport mode trunk
+```
+
+> Укажите, что VLAN 10, 20, 30 и 1000 могут проходить по транку.
+
+```shell
+S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+```
+
+```shell
+S2(config-if)#switchport trunk allowed vlan 10,20,30,1000
+```
+
+> Проверьте транки, native VLAN и разрешенные VLAN через транк.
+
+```shell
+S1(config-if)#do show vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/5
+10   Management                       active    
+20   Sales                            active    Fa0/6
+30   Operations                       active    
+999  Parking_Lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11
+                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15
+                                                Fa0/16, Fa0/17, Fa0/18, Fa0/19
+                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23
+                                                Fa0/24, Gig0/1, Gig0/2
+1000 Own                              active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+
+S1(config-if)#do show int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      1000
+
+Port        Vlans allowed on trunk
+Fa0/1       10,20,30,1000
+
+Port        Vlans allowed and active in management domain
+Fa0/1       10,20,30,1000
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       10,20,30,1000
+```
+
+```shell
+S2(config-if)#do show vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    
+10   Management                       active    
+20   Sales                            active    
+30   Operations                       active    Fa0/18
+999  Parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/5
+                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9
+                                                Fa0/10, Fa0/11, Fa0/12, Fa0/13
+                                                Fa0/14, Fa0/15, Fa0/16, Fa0/17
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2
+1000 Own                              active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+
+S2(config)#do show int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      1000
+
+Port        Vlans allowed on trunk
+Fa0/1       10,20,30,1000
+
+Port        Vlans allowed and active in management domain
+Fa0/1       10,20,30,1000
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       10,20,30,1000
+```
+
+## Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1.
+> Настройте интерфейс S1 F0/5 с теми же параметрами транка, что и F0/1. Это транк до маршрутизатора.
+
+```shell
+S1(config)#interface f0/5
+S1(config-if)#switchport mode trunk
+S1(config-if)#switchport trunk native vlan 1000
+S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+```
+
+> Сохраните текущую конфигурацию в файл загрузочной конфигурации.
+
+Готово
+
+> Проверка транкинга.
+> Вопрос:
+> Что произойдет, если G0/0/1 на R1 будет отключен?
+
+Будет невозможно общение между различными VLAN
 
 # <a name="part4"></a>Часть 4. Настройка маршрутизации между сетями VLAN
 
