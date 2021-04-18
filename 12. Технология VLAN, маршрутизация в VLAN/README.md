@@ -35,11 +35,10 @@
 | 1000          | Собственная        | -                                                             |
 
 # <a name="part1"></a>Часть 1. Создание сети и настройка основных параметров устройства
-
 ## Создайте сеть согласно топологии
 Готово
 
-## Настройте базовые параметры для маршрутизатора.
+## Настройте базовые параметры для маршрутизатора
 > * Подключитесь к маршрутизатору с помощью консоли и активируйте привилегированный режим EXEC.
 > * Откройте окно конфигурации
 > * Войдите в режим конфигурации.
@@ -78,7 +77,7 @@ Building configuration...
 [OK]
 ```
 
-## Настройте базовые параметры каждого коммутатора.
+## Настройте базовые параметры каждого коммутатора
 > * Присвойте коммутатору имя устройства.
 > * Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.
 > * Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.
@@ -141,7 +140,7 @@ Building configuration...
 Готово
 
 # <a name="part2"></a>Часть 2. Создание сетей VLAN и назначение портов коммутатора
-## Создайте сети VLAN на коммутаторах.
+## Создайте сети VLAN на коммутаторах
 > Создайте и назовите необходимые VLAN на каждом коммутаторе из таблицы выше.
 
 ```shell
@@ -236,7 +235,7 @@ S2(config-if-range)#switchport access vlan 999
 S2(config-if-range)#shutdown
 ```
 
-## Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+## Назначьте сети VLAN соответствующим интерфейсам коммутатора
 
 > Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
 
@@ -301,7 +300,7 @@ VLAN Name                             Status    Ports
 
 # <a name="part3"></a>Часть 3. Настройка транка 802.1Q между коммутаторами
 
-## Вручную настройте магистральный интерфейс F0/1 на коммутаторах S1 и S2.
+## Вручную настройте магистральный интерфейс F0/1 на коммутаторах S1 и S2
 
 > Настройка статического транкинга на интерфейсе F0/1 для обоих коммутаторов.
 > Установите native VLAN 1000 на обоих коммутаторах.
@@ -400,7 +399,7 @@ Port        Vlans in spanning tree forwarding state and not pruned
 Fa0/1       10,20,30,1000
 ```
 
-## Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1.
+## Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1
 > Настройте интерфейс S1 F0/5 с теми же параметрами транка, что и F0/1. Это транк до маршрутизатора.
 
 ```shell
@@ -422,4 +421,147 @@ S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
 
 # <a name="part4"></a>Часть 4. Настройка маршрутизации между сетями VLAN
 
+> При необходимости активируйте интерфейс G0/0/1 на маршрутизаторе.
+
+```shell
+R1(config)#interface g0/0/1
+R1(config-if)#no shutdown
+```
+
+> Настройте подинтерфейсы для каждой VLAN, как указано в таблице IP-адресации. 
+> Все подинтерфейсы используют инкапсуляцию 802.1Q. 
+> Убедитесь, что подинтерфейсу для native VLAN не назначен IP-адрес. Включите описание для каждого подинтерфейса.
+
+```shell
+R1(config)#interface g0/0/1.10
+R1(config-subif)#encapsulation dot1Q 10
+R1(config-subif)#ip address 192.168.10.1 255.255.255.0
+R1(config-subif)#interface g0/0/1.20
+R1(config-subif)#encapsulation dot1Q 20
+R1(config-subif)#ip address 192.168.20.1 255.255.255.0
+R1(config-subif)#interface g0/0/1.30
+R1(config-subif)#encapsulation dot1Q 30
+R1(config-subif)#ip address 192.168.30.1 255.255.255.0
+R1(config-subif)#interface g0/0/1.1000
+R1(config-subif)#encapsulation dot1Q 1000
+```
+
+> Убедитесь, что вспомогательные интерфейсы работают
+
+```shell
+R1#show interface g0/0/1.10
+GigabitEthernet0/0/1.10 is up, line protocol is up (connected)
+  Hardware is PQUICC_FEC, address is 0001.c983.6a02 (bia 0001.c983.6a02)
+  Internet address is 192.168.10.1/24
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 10
+  ARP type: ARPA, ARP Timeout 04:00:00, 
+  Last clearing of "show interface" counters never
+
+R1#show interface g0/0/1.20
+GigabitEthernet0/0/1.20 is up, line protocol is up (connected)
+  Hardware is PQUICC_FEC, address is 0001.c983.6a02 (bia 0001.c983.6a02)
+  Internet address is 192.168.20.1/24
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 20
+  ARP type: ARPA, ARP Timeout 04:00:00, 
+  Last clearing of "show interface" counters never
+
+R1#show interface g0/0/1.30
+GigabitEthernet0/0/1.30 is up, line protocol is up (connected)
+  Hardware is PQUICC_FEC, address is 0001.c983.6a02 (bia 0001.c983.6a02)
+  Internet address is 192.168.30.1/24
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 30
+  ARP type: ARPA, ARP Timeout 04:00:00, 
+  Last clearing of "show interface" counters never
+
+R1#show interface g0/0/1.1000
+GigabitEthernet0/0/1.1000 is up, line protocol is up (connected)
+  Hardware is PQUICC_FEC, address is 0001.c983.6a02 (bia 0001.c983.6a02)
+  MTU 1500 bytes, BW 100000 Kbit, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 1000
+  ARP type: ARPA, ARP Timeout 04:00:00, 
+  Last clearing of "show interface" counters never
+```
+
 # <a name="part5"></a>Часть 5. Проверка, что маршрутизация между VLAN работает
+
+## Выполните следующие тесты с PC-A. Все должно быть успешно
+
+> Отправьте эхо-запрос с PC-A на шлюз по умолчанию.
+
+```shell
+C:\>ping 192.168.20.1
+
+Pinging 192.168.20.1 with 32 bytes of data:
+
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 192.168.20.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
+> Отправьте эхо-запрос с PC-A на PC-B.
+
+```shell
+C:\>ping 192.168.30.3
+
+Pinging 192.168.30.3 with 32 bytes of data:
+
+Request timed out.
+Reply from 192.168.30.3: bytes=32 time<1ms TTL=127
+Reply from 192.168.30.3: bytes=32 time<1ms TTL=127
+Reply from 192.168.30.3: bytes=32 time<1ms TTL=127
+
+Ping statistics for 192.168.30.3:
+    Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
+> Отправьте команду ping с компьютера PC-A на коммутатор S2.
+
+```shell
+C:\>ping 192.168.10.12
+
+Pinging 192.168.10.12 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Reply from 192.168.10.12: bytes=32 time<1ms TTL=254
+Reply from 192.168.10.12: bytes=32 time<1ms TTL=254
+
+Ping statistics for 192.168.10.12:
+    Packets: Sent = 4, Received = 2, Lost = 2 (50% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
+## Пройдите следующий тест с PC-B
+
+> В окне командной строки на PC-B выполните команду tracert на адрес PC-A.
+> Вопрос:
+> Какие промежуточные IP-адреса отображаются в результатах?
+
+Шлюз по умолчанию, так как трафик между различными VLAN идет именно через него.
+
+```shell
+C:\>tracert 192.168.20.3
+
+Tracing route to 192.168.20.3 over a maximum of 30 hops: 
+
+  1   0 ms      0 ms      0 ms      192.168.30.1
+  2   0 ms      0 ms      0 ms      192.168.20.3
+
+Trace complete.
+```
