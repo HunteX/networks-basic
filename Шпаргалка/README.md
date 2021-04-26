@@ -80,24 +80,24 @@ Router(config-line)#end
 
 # <a name="vlans">VLANs
 ## Команды
-| Команда                                             | Описание                                                 |
-| --------------------------------------------------- | :------------------------------------------------------- |
-| vlan \<vlan-id\>                                    | Создает vlan                                             |
-| name <vlan-name>                                    | Задает имя vlan                                          |
-| show vlan                                           | Полная информация по VLANs                               |
-| show vlan brief                                     | Краткая сводка                                           |
-| show vlan summary                                   | Общая информация по vlan                                 |
-| show interface vlan <vlan-id>                       | Отображает информацию по конкретному vlan                |
-| show interfaces <interface-id> switchport           | Отображает информацию vlan на выбранном интерфейсе       |
-| show interfaces trunk                               | Отображает информацию интерфейсов с режимом trunk        |
-| switchport mode access                              | Задает access-режим работы интерфейса                    |
-| switchport mode trunk                               | Задает trunk-режим работы интерфейса                     |
-| switchport access vlan <vlan-id>                    | Задает vlan на конкретный интерфейс                      |
-| switchport voice vlan <vlan-id>                     | Задает voice vlan                                        |
-| switchport trunk native vlan <vlan-id>              | Задает native vlan (в режиме trunk)                      |
-| switchport trunk allowed vlan <vlan-id>,<vlan-id2>  | Указывает список vlan разрешенных в режиме trunk         |
-| switchport trunk allowed vlan add <vlan-id>         | Добавляет новый vlan в существующий список               |
-| delete flash:vlan.dat                               | Удаляет файл с конфигурацией VLANs                       |
+| Команда                                                 | Описание                                                 |
+| ------------------------------------------------------- | :------------------------------------------------------- |
+| vlan \<vlan-id\>                                        | Создает vlan                                             |
+| name \<vlan-name\>                                      | Задает имя vlan                                          |
+| show vlan                                               | Полная информация по VLANs                               |
+| show vlan brief                                         | Краткая сводка                                           |
+| show vlan summary                                       | Общая информация по vlan                                 |
+| show interface vlan \<vlan-id\>                         | Отображает информацию по конкретному vlan                |
+| show interfaces \<interface-id\> switchport             | Отображает информацию vlan на выбранном интерфейсе       |
+| show interfaces trunk                                   | Отображает информацию интерфейсов с режимом trunk        |
+| switchport mode access                                  | Задает access-режим работы интерфейса                    |
+| switchport mode trunk                                   | Задает trunk-режим работы интерфейса                     |
+| switchport access vlan \<vlan-id\>                      | Задает vlan на конкретный интерфейс                      |
+| switchport voice vlan \<vlan-id\>                       | Задает voice vlan                                        |
+| switchport trunk native vlan \<vlan-id\>                | Задает native vlan (в режиме trunk)                      |
+| switchport trunk allowed vlan \<vlan-id\>,\<vlan-id2\>  | Указывает список vlan разрешенных в режиме trunk         |
+| switchport trunk allowed vlan add \<vlan-id\>           | Добавляет новый vlan в существующий список               |
+| delete flash:vlan.dat                                   | Удаляет файл с конфигурацией VLANs                       |
 
 ## Router-On-Stick
 ```shell
@@ -112,13 +112,13 @@ no shutdown
 | Команда                                             | Описание                                                 |
 | --------------------------------------------------- | :------------------------------------------------------- |
 | show spanning-tree                                  | Общая информация по STP                                  |
-| show spanning-tree vlan <vlan-id>                   | Информация по STP на конкретном VLAN                     |
+| show spanning-tree vlan \<vlan-id\>                 | Информация по STP на конкретном VLAN                     |
 | show spanning-tree summary                          | Статистика по STP и интерфейсам                          |
-| spanning-tree mode <proto>                          | Задает протокол, "pvst" или "rapid-pvst"                 |
-| spanning-tree cost <1-200000000>                    | Задает стоимость пути на интерфейсе                      |
-| spanning-tree VLAN <vlan-id> root primary           | Задает vlan определенный приоритет в BID (root bridge)   |
-| spanning-tree VLAN <vlan-id> root secondary         | Задает vlan определенный приоритет в BID (secondary)     |
-| spanning-tree VLAN <vlan-id> priority <value>       | Задает vlan приоритет в BID (custom value)               |
+| spanning-tree mode \<proto\>                        | Задает протокол, "pvst" или "rapid-pvst"                 |
+| spanning-tree cost \<1-200000000\>                  | Задает стоимость пути на интерфейсе                      |
+| spanning-tree VLAN \<vlan-id\> root primary         | Задает vlan определенный приоритет в BID (root bridge)   |
+| spanning-tree VLAN \<vlan-id\> root secondary       | Задает vlan определенный приоритет в BID (secondary)     |
+| spanning-tree VLAN \<vlan-id\> priority \<value\>   | Задает vlan приоритет в BID (custom value)               |
 | spanning-tree portfast                              | Включает PortFast на интерфейсе                          |
 | spanning-tree bpduguard enable                      | Включает bpduguard                                       |
 | spanning-tree link-type point-to-point              | Full-duplex                                              |
@@ -128,22 +128,22 @@ no shutdown
 ## Команды
 | Команда                                             | Описание                                                       |
 | --------------------------------------------------- | :------------------------------------------------------------- |
-| channel-group <id> mode desirable                   | Создает агрегированный канал для выбранных интерфейсов (PAgP)  |
-| channel-group <id> mode active                      | Создает агрегированный канал для выбранных интерфейсов (LACP)  |
-| interface port-channel <id>                         | Настройка агрегированный канал                                 |
-| show interfaces port-channel <id>                   | Отображает статус по агрегированному каналу                    |
+| channel-group \<id\> mode desirable                 | Создает агрегированный канал для выбранных интерфейсов (PAgP)  |
+| channel-group \<id\> mode active                    | Создает агрегированный канал для выбранных интерфейсов (LACP)  |
+| interface port-channel \<id\>                       | Настройка агрегированный канал                                 |
+| show interfaces port-channel \<id\>                 | Отображает статус по агрегированному каналу                    |
 | show etherchannel summary                           | Сводка по EtherChannel                                         |
 | show etherchannel port-channel                      | Отображает информацию по агрегированному каналу                |
-| show interfaces <fid> etherchannel                  | Отображает роль выбранного интерфейса в EtherChannel           |
+| show interfaces \<fid\> etherchannel                | Отображает роль выбранного интерфейса в EtherChannel           |
 
 # <a name="hsrp">HSRP
 ## Команды
 | Команда                                             | Описание                                                       |
 | --------------------------------------------------- | :------------------------------------------------------------- |
-| standby version <version>                           | Задает версию HSRP (выставлять на физическом интерфейсе)       |
-| standby <group-number> ip <ip>                      | Задает виртуальный IP для выбранной группы                     |
-| standby <group-number> priority <value>             | Задает приоритет маршрутизатору                                |
-| standby <group-number> preempt                      | Задает приоритетное вытеснение                                 |
+| standby version \<version\>                         | Задает версию HSRP (выставлять на физическом интерфейсе)       |
+| standby \<group-number\> ip \<ip\>                  | Задает виртуальный IP для выбранной группы                     |
+| standby \<group-number\> priority \<value\>         | Задает приоритет маршрутизатору                                |
+| standby \<group-number\> preempt                    | Задает приоритетное вытеснение                                 |
 | show standby                                        | Информация по HSRP                                             |
 | show standby brief                                  | Сводка по HSRP                                                 |
 | debug standby ?                                     | Команды для дебага                                             |
