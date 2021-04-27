@@ -6,6 +6,7 @@
 * [STP](#stp)
 * [EtherChannel](#etherchannel)
 * [HSRP](#hsrp)
+* [DHCP](#dhcp)
 
 # <a name="passwords"></a>Пароли
 ## Пароль на privileged mode
@@ -147,3 +148,20 @@ no shutdown
 | show standby                                        | Информация по HSRP                                             |
 | show standby brief                                  | Сводка по HSRP                                                 |
 | debug standby ?                                     | Команды для дебага                                             |
+
+# <a name="dhcp">DHCP
+## Команды
+| Команда                                             | Описание                                                       |
+| --------------------------------------------------- | :------------------------------------------------------------- |
+| ip dhcp excluded-address \<ip-start\> \<ip-end\>    | Исключает указанный диапазон из DHCP-пула                      |
+| ip dhcp pool \<name\>                               | Создает DHCP-пул                                               |
+| network \<network\> \<netmask\>                     | Задает подсеть для DHCP-пула                                   |
+| default-router \<ip\>                               | Задает шлюз по умолчанию для DHCP-пула                         |
+| dns-server \<ip\>                                   | Задает DNS для DHCP-пула                                       |
+| domain-name \<name\>                                | Задает доменное имя для DHCP-пула                              |
+| lease \<value\>                                     | Задает время жизни резервирования IP-адреса                    |
+| show running-config \| section dhcp                 | Отображает конфигурацию DHCP                                   |
+| show ip dhcp binding                                | Отображает биндинги IPv4 -> MAC службы DHCP                    |
+| show ip dhcp server statistics                      | Отображает статистику службы DHCP                              |
+| no service dhcp                                     | Отключает службу DHCP                                          |
+| ip helper-address \<ip\>                            | Задает DHCP-relay                                              |
