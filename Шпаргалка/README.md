@@ -7,6 +7,7 @@
 * [EtherChannel](#etherchannel)
 * [HSRP](#hsrp)
 * [DHCP](#dhcp)
+* [DHCP/SLAAC](#dhcpv6)
 
 # <a name="passwords"></a>Пароли
 ## Пароль на privileged mode
@@ -165,3 +166,71 @@ no shutdown
 | show ip dhcp server statistics                      | Отображает статистику службы DHCP                              |
 | no service dhcp                                     | Отключает службу DHCP                                          |
 | ip helper-address \<ip\>                            | Задает DHCP-relay                                              |
+
+# <a name="dhcpv6">SLAAC/DHCPv6
+## Stateless DHCPv6 Server
+```shell
+R1(config)# ipv6 unicast-routing
+R1(config)# ipv6 dhcp pool IPV6-STATELESS
+R1(config-dhcpv6)# dns-server 2001:db8:acad:1::254
+R1(config-dhcpv6)# domain-name example.com
+R1(config-dhcpv6)# exit
+R1(config)# interface GigabitEthernet0/0/1
+R1(config-if)# description Link to LAN
+R1(config-if)# ipv6 address fe80::1 link-local
+R1(config-if)# ipv6 address 2001:db8:acad:1::1/64
+R1(config-if)# ipv6 nd other-config-flag
+R1(config-if)# ipv6 dhcp server IPV6-STATELESS
+R1(config-if)# no shut
+R1(config-if)# end
+```
+
+## Stateless DHCPv6 Client
+```shell
+R3(config)# ipv6 unicast-routing
+R3(config)# interface g0/0/1
+R3(config-if)# ipv6 enable
+R3(config-if)# ipv6 address autoconfig
+R3(config-if)# end
+```
+
+## Stateful DHCPv6 Server
+```shell
+R1(config)# ipv6 unicast-routing
+R1(config)# ipv6 dhcp pool IPV6-STATEFUL
+R1(config-dhcpv6)# address prefix 2001:db8:acad:1::/64
+R1(config-dhcpv6)# dns-server 2001:4860:4860::8888
+R1(config-dhcpv6)# domain-name example.com
+R1(config)# interface GigabitEthernet0/0/1
+R1(config-if)# description Link to LAN
+R1(config-if)# ipv6 address fe80::1 link-local
+R1(config-if)# ipv6 address 2001:db8:acad:1::1/64
+R1(config-if)# ipv6 nd managed-config-flag
+R1(config-if)# ipv6 nd prefix default no-autoconfig
+R1(config-if)# ipv6 dhcp server IPV6-STATEFUL
+R1(config-if)# no shut
+R1(config-if)# end
+```
+
+## Stateful DHCPv6 Client
+```shell
+R3(config)# ipv6 unicast-routing
+R3(config)# interface g0/0/1
+R3(config-if)# ipv6 enable
+R3(config-if)# ipv6 address dhcp
+R3(config-if)# end
+```
+
+## DHCPv6 Relay Agent
+```shell
+R1(config)# interface gigabitethernet 0/0/1
+R1(config-if)# ipv6 dhcp relay destination 2001:db8:acad:1::2 G0/0/0
+R1(config-if)# exit
+```
+
+## Команды
+| Команда                                             | Описание                                                       |
+| --------------------------------------------------- | :------------------------------------------------------------- |
+| show ipv6 dhcp interface                            | Отображает информацию по DHCP на выбранном интерфейсе          |
+| show ipv6 dhcp binding                              | Отображает DHCPv6 биндинги                                     |
+| show ipv6 dhcp pool                                 | Отображает DHCPv6 пулы                                         |
