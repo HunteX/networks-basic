@@ -8,6 +8,7 @@
 * [HSRP](#hsrp)
 * [DHCP](#dhcp)
 * [DHCP/SLAAC](#dhcpv6)
+* [Безопасность](#security)
 
 # <a name="passwords"></a>Пароли
 ## Пароль на privileged mode
@@ -234,3 +235,144 @@ R1(config-if)# exit
 | show ipv6 dhcp interface                            | Отображает информацию по DHCP на выбранном интерфейсе          |
 | show ipv6 dhcp binding                              | Отображает DHCPv6 биндинги                                     |
 | show ipv6 dhcp pool                                 | Отображает DHCPv6 пулы                                         |
+
+# <a name="security">Security
+Disable all unused ports on a switch
+
+## Port security
+### Команды
+| Команда                                             | Описание                                                       |
+| --------------------------------------------------- | :------------------------------------------------------------- |
+| switchport port-security                            | Включает port security на ранее выбранном access-порте         |
+| show port-security interface \<interface\>          | Отображает настройки port security на интерфейсе               |
+| switchport port-security aging                      | Управляет временем жизни настройки                             |
+| switchport port-security mac-address                | Привязывает mac-адрес                                          |
+| switchport port-security maximum                    | Задает максимальное количество возможных mac-адресов           |
+| switchport port-security violation                  | Задает режим работы                                            |
+| show port-security                                  | Отображает общие настройки port security                       |
+| show port-security address                          | Отображает привязанные mac-адреса                              |
+
+### Пример
+```shell
+S1(config)# interface f0/1
+S1(config-if)# switchport mode access
+S1(config-if)# switchport port-security
+S1(config-if)# end
+```
+
+## VLAN Attacks
+Rogue switch.
+Spoofing DTP.
+Double-tagging attack.
+
+### Пример
+```shell
+S1(config)# interface range fa0/1 - 16
+S1(config-if-range)# switchport mode access
+S1(config-if-range)# exit
+S1(config)# 
+S1(config)# interface range fa0/17 - 20
+S1(config-if-range)# switchport mode access
+S1(config-if-range)# switchport access vlan 1000
+S1(config-if-range)# shutdown
+S1(config-if-range)# exit
+S1(config)# 
+S1(config)# interface range fa0/21 - 24
+S1(config-if-range)# switchport mode trunk
+S1(config-if-range)# switchport nonegotiate
+S1(config-if-range)# switchport trunk native vlan 999
+S1(config-if-range)# end
+S1#
+```
+
+## DHCP Attacks
+### DHCP snooping
+#### Команды
+| Команда                                             | Описание                                                       |
+| --------------------------------------------------- | :------------------------------------------------------------- |
+| ip dhcp snooping                                    | Глобально включает dhcp snooping                               |
+| ip dhcp snooping trust                              | Используется на доверенных портах                              |
+| ip dhcp snooping limit rate                         | Задает лимит на недоверенных портах                            |
+| ip dhcp snooping \<vlan\>                           | Включает dhcp snooping на выбранном(ых) VLAN(s)                |
+| show ip dhcp snooping                               | Отображает конфигурацию                                        |
+
+#### Пример
+```shell
+S1(config)# ip dhcp snooping
+S1(config)# interface f0/1
+S1(config-if)# ip dhcp snooping trust
+S1(config-if)# exit
+S1(config)# interface range f0/5 - 24
+S1(config-if-range)# ip dhcp snooping limit rate 6
+S1(config-if-range)# exit
+S1(config)# ip dhcp snooping vlan 5,10,50-52
+S1(config)# end
+```
+
+## ARP Attacks
+### Enable DAI
+```shell
+S1(config)# ip dhcp snooping
+S1(config)# ip dhcp snooping vlan 10
+S1(config)# ip arp inspection vlan 10
+S1(config)# interface fa0/24
+S1(config-if)# ip dhcp snooping trust
+S1(config-if)# ip arp inspection trust
+```
+
+```shell
+S1(config)# ip arp inspection validate ?
+dst-mac  Validate destination MAC address
+  ip       Validate IP addresses
+  src-mac  Validate source MAC address
+S1(config)# ip arp inspection validate src-mac
+S1(config)# ip arp inspection validate dst-mac
+S1(config)# ip arp inspection validate ip
+S1(config)# do show run | include validate
+ip arp inspection validate ip 
+S1(config)# ip arp inspection validate src-mac dst-mac ip
+S1(config)# do show run | include validate
+ip arp inspection validate src-mac dst-mac ip 
+S1(config)#
+```
+
+## STP Attacks
+### Enable PortFast
+```shell
+S1(config)# interface fa0/1
+S1(config-if)# switchport mode access
+S1(config-if)# spanning-tree portfast
+%Warning: portfast should only be enabled on ports connected to a single
+ host. Connecting hubs, concentrators, switches, bridges, etc... to this
+ interface when portfast is enabled, can cause temporary bridging loops.
+ Use with CAUTION
+%Portfast has been configured on FastEthernet0/1 but will only
+ have effect when the interface is in a non-trunking mode.
+S1(config-if)# exit
+S1(config)# spanning-tree portfast default
+```
+
+### BPDU Guard
+```shell
+S1(config)# interface fa0/1
+S1(config-if)# spanning-tree bpduguard enable
+S1(config-if)# exit
+S1(config)# spanning-tree portfast bpduguard default
+S1(config)# end
+S1# show spanning-tree summary
+Switch is in pvst mode
+Root bridge for: none
+Extended system ID           is enabled
+Portfast Default             is enabled
+PortFast BPDU Guard Default  is enabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is enabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+(output omitted)
+S1#
+```
+
+Note: Always enable BPDU Guard on all PortFast-enabled ports.
