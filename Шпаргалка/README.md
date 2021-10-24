@@ -9,6 +9,7 @@
 * [DHCP](#dhcp)
 * [DHCP/SLAAC](#dhcpv6)
 * [Безопасность](#security)
+* [OSPF](#ospf)
 
 # <a name="passwords"></a>Пароли
 ## Пароль на privileged mode
@@ -376,3 +377,24 @@ S1#
 ```
 
 Note: Always enable BPDU Guard on all PortFast-enabled ports.
+
+# <a name="ospf">OSPF
+
+## Команды
+| Команда                                                         | Описание                                           |
+| --------------------------------------------------------------- | :------------------------------------------------- |
+| router ospf \<process-id\>                                      | Глобально включает OSPF                            |
+| router-id \<rid\>                                               | rid в формате ip-адреса                            |
+| clear ip ospf process                                           | Перезапускает процессы OSPF                        |
+| network \<network-address\> \<wildcard-mask\> area \<area-id\>  | Запускает OSPF на указанных сетях                  |
+| network \<ip-address\> 0.0.0.0 area \<area-id\>                 | Запускает OSPF на указанном адресе                 |
+| ip ospf \<process-id\> area \<area-id\>                         | Выполнять на интерфейсе. Запускает на нем OSPF     |
+| passive-interface \<interface\>                                 | Задает пассивный интерфейс                         |
+| passive-interface default                                       | Задает все интерфейсы пассивными                   |
+| no passive-interface \<interface\>                              | Отключает пассивный интерфейс                      |
+| ip ospf network point-to-point                                  | Выполнять на интерфейсе. Задает p2p режим для сети |
+| ip ospf priority \<1-255\>                                      | Задает приоритет при выборе DR/BDR. Больше=сильнее |
+| ip ospf priority 0                                              | Запрещает получать роль DR/BDR                     |
+| show ip protocols                                               | Отображает информацию об OSPF                      |
+| show ip ospf interface \<interface\>                            | Отображает информацию об OSPF на интерфейсе        |
+| show ip ospf neighbor                                           | Отображает состояние OSPF с соседями               |
