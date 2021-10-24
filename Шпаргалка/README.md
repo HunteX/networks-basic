@@ -383,7 +383,7 @@ Note: Always enable BPDU Guard on all PortFast-enabled ports.
 ## Команды
 | Команда                                                         | Описание                                           |
 | --------------------------------------------------------------- | :------------------------------------------------- |
-| router ospf \<process-id\>                                      | Глобально включает OSPF                            |
+| router ospf \<process-id\>                                      | Глобально включает OSPF. 1 >= process-id <= 65535  |
 | router-id \<rid\>                                               | rid в формате ip-адреса                            |
 | clear ip ospf process                                           | Перезапускает процессы OSPF                        |
 | network \<network-address\> \<wildcard-mask\> area \<area-id\>  | Запускает OSPF на указанных сетях                  |
