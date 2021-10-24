@@ -405,4 +405,5 @@ Note: Always enable BPDU Guard on all PortFast-enabled ports.
 | show ip ospf interface brief                                    | Отображает общую информацию OSPF на интерфейсах    |
 | show ip ospf interface \<interface\>                            | Отображает информацию OSPF на интерфейсе           |
 | show ip ospf neighbor                                           | Отображает состояние OSPF с соседями               |
+| show ip ospf neighbor detail                                    | Отображает подробное состояние OSPF с соседями     |
 | show ip route ospf                                              | Отображает маршруты OSPF                           |
