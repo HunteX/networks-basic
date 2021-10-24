@@ -395,6 +395,14 @@ Note: Always enable BPDU Guard on all PortFast-enabled ports.
 | ip ospf network point-to-point                                  | Выполнять на интерфейсе. Задает p2p режим для сети |
 | ip ospf priority \<1-255\>                                      | Задает приоритет при выборе DR/BDR. Больше=сильнее |
 | ip ospf priority 0                                              | Запрещает получать роль DR/BDR                     |
-| show ip protocols                                               | Отображает информацию об OSPF                      |
-| show ip ospf interface \<interface\>                            | Отображает информацию об OSPF на интерфейсе        |
+| auto-cost reference-bandwidth \<Mbps\>                          | Задает дефолтную стоимость при расчете метрики     |
+| ip ospf cost \<value\>                                          | Выполнять на интерфейсе. Задает метрику            |
+| ip ospf hello-interval \<seconds\>                              | Выполнять на интерфейсе. Задает hello interval     |
+| ip ospf dead-interval \<seconds\>                               | Выполнять на интерфейсе. Задает dead interval      |
+| default-information originate                                   | Роутер распространяет default gateway              |
+| show ip protocols                                               | Отображает информацию OSPF                         |
+| show ip ospf                                                    | Отображает информацию о процессе OSPF              |
+| show ip ospf interface brief                                    | Отображает общую информацию OSPF на интерфейсах    |
+| show ip ospf interface \<interface\>                            | Отображает информацию OSPF на интерфейсе           |
 | show ip ospf neighbor                                           | Отображает состояние OSPF с соседями               |
+| show ip route ospf                                              | Отображает маршруты OSPF                           |
