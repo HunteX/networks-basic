@@ -236,4 +236,25 @@ Approximate round trip times in milli-seconds:
 ```
 
 # <a name="part4"></a>Часть 4. Настройка и проверка состояния DHCPv6 сервера на R1
+
+В части 4 настраивается R1 для ответа на запросы DHCPv6 от локальной сети на R2.
+
+> Создайте пул DHCPv6 на R1 для сети 2001:db8:acad:3:aaa::/80. 
+  Это предоставит адреса локальной сети, подключенной к интерфейсу G0/0/1 на R2. 
+  В составе пула задайте DNS-сервер 2001:db8:acad: :254 и задайте доменное имя STATEFUL.com
+
+```shell
+R1(config)#ipv6 dhcp pool R2-STATEFUL
+R1(config-dhcpv6)#address prefix 2001:db8:acad:3:aaa::/80
+R1(config-dhcpv6)#dns-server 2001:db8:acad::254
+R1(config-dhcpv6)#domain-name stateful.com
+```
+
+> Назначьте только что созданный пул DHCPv6 интерфейсу g0/0/0 на R1
+
+```shell
+R1(config)#interface g0/0/0
+R1(config-if)#ipv6 dhcp server R2-STATEFUL
+```
+
 # <a name="part5"></a>Часть 5. Настройка и проверка DHCPv6 Relay на R2
