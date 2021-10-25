@@ -425,10 +425,143 @@ Fa0/5       100,200,1000
 
 # <a name="part2"></a>Часть 2. Настройка и проверка двух серверов DHCPv4 на R1
 ## Настройте R1 с пулами DHCPv4 для двух поддерживаемых подсетей
+
+> Исключите первые пять используемых адресов из каждого пула адресов.
+
+```shell
+R1(config)#ip dhcp excluded-address 192.168.1.1 192.168.1.5
+R1(config)#ip dhcp excluded-address 192.168.1.97 192.168.1.101
+```
+
+> Откройте окно конфигурации
+  Создайте пул DHCP (используйте уникальное имя для каждого пула).
+  Укажите сеть, поддерживающую этот DHCP-сервер.
+  В качестве имени домена укажите CCNA-lab.com.
+  Настройте соответствующий шлюз по умолчанию для каждого пула DHCP.
+  Настройте время аренды на 2 дня 12 часов и 30 минут.
+
+```shell
+R1(config)#ip dhcp pool R1_Client_LAN
+R1(dhcp-config)#network 192.168.1.0 255.255.255.192
+R1(dhcp-config)#domain-name CCNA-lab.com
+R1(dhcp-config)#default-router 192.168.1.1
+```
+
+> Затем настройте второй пул DHCPv4, используя имя пула R2_Client_LAN и вычислите сеть, маршрутизатор по умолчанию, 
+ и используйте то же имя домена и время аренды, что и предыдущий пул DHCP.
+
+```shell
+R1(config)#ip dhcp pool R2_Client_LAN
+R1(dhcp-config)#network 192.168.1.96 255.255.255.240
+R1(dhcp-config)#domain-name CCNA-lab.com
+R1(dhcp-config)#default-router 192.168.1.97
+R1(dhcp-config)#exit
+```
+
 ## Сохраните конфигурацию
+
+Выполнено.
+
 ## Проверка конфигурации сервера DHCPv4
+
+> Чтобы просмотреть сведения о пуле, выполните команду show ip dhcp pool.
+
+```shell
+R1#show ip dhcp pool
+
+Pool R1_Client_LAN :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 62
+ Leased addresses               : 0
+ Excluded addresses             : 2
+ Pending event                  : none
+
+ 1 subnet is currently in the pool
+ Current index        IP address range                    Leased/Excluded/Total
+ 192.168.1.1          192.168.1.1      - 192.168.1.62      0    / 2     / 62
+
+Pool R2_Client_LAN :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 14
+ Leased addresses               : 0
+ Excluded addresses             : 2
+ Pending event                  : none
+
+ 1 subnet is currently in the pool
+ Current index        IP address range                    Leased/Excluded/Total
+ 192.168.1.97         192.168.1.97     - 192.168.1.110     0    / 2     / 14
+```
+
+> Выполните команду show ip dhcp bindings для проверки установленных назначений адресов DHCP.
+
+```shell
+R1#show ip dhcp binding 
+IP address       Client-ID/              Lease expiration        Type
+                 Hardware address
+```
+
+> Выполните команду show ip dhcp server statistics для проверки сообщений DHCP
+
+Скорее всего версия образа не та или модель не поддерживает.
+
 ## Попытка получить IP-адрес от DHCP на PC-A
 
+> Из командной строки компьютера PC-A выполните команду ipconfig /renew.
+
+```shell
+C:\>ipconfig /renew
+
+   IP Address......................: 192.168.1.6
+   Subnet Mask.....................: 255.255.255.192
+   Default Gateway.................: 192.168.1.1
+   DNS Server......................: 0.0.0.0
+```
+
+> После завершения процесса обновления выполните команду ipconfig для просмотра новой информации об IP-адресе.
+
+```shell
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: CCNA-lab.com
+   Link-local IPv6 Address.........: FE80::2D0:97FF:FE5C:D2B2
+   IPv6 Address....................: ::
+   IPv4 Address....................: 192.168.1.6
+   Subnet Mask.....................: 255.255.255.192
+   Default Gateway.................: ::
+                                     192.168.1.1
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: CCNA-lab.com
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+```
+
+> Проверьте подключение с помощью пинга IP-адреса интерфейса R1 G0/0/1.
+
+```shell
+C:\>ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+Reply from 192.168.1.1: bytes=32 time=5ms TTL=255
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 5ms, Average = 1ms
+```
 
 # <a name="part3"></a>Часть 3. Настройка и проверка DHCP-ретрансляции на R2
 ## Настройка R2 в качестве агента DHCP-ретрансляции для локальной сети на G0/0/1
