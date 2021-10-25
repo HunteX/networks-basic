@@ -118,5 +118,122 @@ Bluetooth Connection:
 ```
 
 # <a name="part3"></a>Часть 3. Настройка и проверка состояния DHCPv6 stateless сервера на R1
+## Более подробно изучите конфигурацию PC-A
+
+> Выполните команду ipconfig /all на PC-A и посмотрите на результат
+
+```shell
+C:\>ipconfig /all
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0060.2F4A.6A1D
+   Link-local IPv6 Address.........: FE80::260:2FFF:FE4A:6A1D
+   IPv6 Address....................: 2001:DB8:ACAD:1:260:2FFF:FE4A:6A1D
+   Autoconfiguration IP Address....: 169.254.106.29
+   Subnet Mask.....................: 255.255.0.0
+   Default Gateway.................: FE80::1
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 
+   DHCPv6 Client DUID..............: 00-01-00-01-72-81-08-E7-00-60-2F-4A-6A-1D
+   DNS Servers.....................: ::
+                                     0.0.0.0
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0009.7CC6.D1BB
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 
+   DHCPv6 Client DUID..............: 00-01-00-01-72-81-08-E7-00-60-2F-4A-6A-1D
+   DNS Servers.....................: ::
+                                     0.0.0.0
+```
+
+## Настройте R1 для предоставления DHCPv6 без состояния для PC-A
+
+> Создайте пул DHCP IPv6 на R1 с именем R1-STATELESS.
+  В составе этого пула назначьте адрес DNS-сервера как 2001:db8:acad: :1, а имя домена — как stateless.com
+
+```shell
+R1(config)#ipv6 dhcp pool R1-STATELESS
+R1(config-dhcpv6)#dns-server 2001:db8:acad::254
+R1(config-dhcpv6)#domain-name stateless.com
+```
+
+> Настройте интерфейс G0/0/1 на R1, чтобы предоставить флаг конфигурации OTHER для локальной сети R1
+   и укажите только что созданный пул DHCP в качестве ресурса DHCP для этого интерфейса
+
+```shell
+R1(config)#interface g0/0/1
+R1(config-if)#ipv6 nd other-config-flag
+R1(config-if)#ipv6 dhcp server R1-STATELESS
+```
+
+> Перезапустите PC-A.
+  Проверьте вывод ipconfig /all и обратите внимание на изменения.
+
+```shell
+C:\>ipconfig /all
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: stateless.com 
+   Physical Address................: 0060.2F4A.6A1D
+   Link-local IPv6 Address.........: FE80::260:2FFF:FE4A:6A1D
+   IPv6 Address....................: 2001:DB8:ACAD:1:260:2FFF:FE4A:6A1D
+   Autoconfiguration IP Address....: 169.254.106.29
+   Subnet Mask.....................: 255.255.0.0
+   Default Gateway.................: FE80::1
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 677478929
+   DHCPv6 Client DUID..............: 00-01-00-01-72-81-08-E7-00-60-2F-4A-6A-1D
+   DNS Servers.....................: 2001:DB8:ACAD::254
+                                     0.0.0.0
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: stateless.com 
+   Physical Address................: 0009.7CC6.D1BB
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 677478929
+   DHCPv6 Client DUID..............: 00-01-00-01-72-81-08-E7-00-60-2F-4A-6A-1D
+   DNS Servers.....................: ::
+                                     0.0.0.0
+```
+
+> Тестирование подключения с помощью пинга IP-адреса интерфейса G0/1 R2
+
+```shell
+C:\>ping 2001:db8:acad:3::1
+
+Pinging 2001:db8:acad:3::1 with 32 bytes of data:
+
+Reply from 2001:DB8:ACAD:3::1: bytes=32 time<1ms TTL=254
+Reply from 2001:DB8:ACAD:3::1: bytes=32 time<1ms TTL=254
+Reply from 2001:DB8:ACAD:3::1: bytes=32 time<1ms TTL=254
+Reply from 2001:DB8:ACAD:3::1: bytes=32 time<1ms TTL=254
+
+Ping statistics for 2001:DB8:ACAD:3::1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
 # <a name="part4"></a>Часть 4. Настройка и проверка состояния DHCPv6 сервера на R1
 # <a name="part5"></a>Часть 5. Настройка и проверка DHCPv6 Relay на R2
