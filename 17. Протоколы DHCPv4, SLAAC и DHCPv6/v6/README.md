@@ -88,6 +88,35 @@ Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 ```
 
 # <a name="part2"></a>Часть 2. Проверка назначения адреса SLAAC от R1
+
+> В части 2 вы убедитесь, что узел PC-A получает адрес IPv6 с помощью метода SLAAC.
+  Включите PC-A и убедитесь, что сетевой адаптер настроен для автоматической настройки IPv6.
+  Через несколько минут результаты команды ipconfig должны показать, что PC-A присвоил себе адрес из сети 2001:db8:1::/64.
+
+```shell
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::260:2FFF:FE4A:6A1D
+   IPv6 Address....................: 2001:DB8:ACAD:1:260:2FFF:FE4A:6A1D
+   Autoconfiguration IPv4 Address..: 169.254.106.29
+   Subnet Mask.....................: 255.255.0.0
+   Default Gateway.................: FE80::1
+                                     0.0.0.0
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+```
+
 # <a name="part3"></a>Часть 3. Настройка и проверка состояния DHCPv6 stateless сервера на R1
 # <a name="part4"></a>Часть 4. Настройка и проверка состояния DHCPv6 сервера на R1
 # <a name="part5"></a>Часть 5. Настройка и проверка DHCPv6 Relay на R2
