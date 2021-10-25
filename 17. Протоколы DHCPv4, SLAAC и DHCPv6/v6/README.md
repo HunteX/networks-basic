@@ -258,3 +258,50 @@ R1(config-if)#ipv6 dhcp server R2-STATEFUL
 ```
 
 # <a name="part5"></a>Часть 5. Настройка и проверка DHCPv6 Relay на R2
+
+В части 5 необходимо настроить и проверить ретрансляцию DHCPv6 на R2, позволяя PC-B получать адрес IPv6
+
+## Включите PC-B и проверьте адрес SLAAC, который он генерирует
+
+```shell
+C:\>ipconfig /all
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0001.C914.1C7C
+   Link-local IPv6 Address.........: FE80::201:C9FF:FE14:1C7C
+   IPv6 Address....................: 2001:DB8:ACAD:3:201:C9FF:FE14:1C7C
+   Autoconfiguration IP Address....: 169.254.28.124
+   Subnet Mask.....................: 255.255.0.0
+   Default Gateway.................: FE80::1
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 
+   DHCPv6 Client DUID..............: 00-01-00-01-1C-B7-77-43-00-01-C9-14-1C-7C
+   DNS Servers.....................: ::
+                                     0.0.0.0
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0007.EC05.609A
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+   DHCP Servers....................: 0.0.0.0
+   DHCPv6 IAID.....................: 
+   DHCPv6 Client DUID..............: 00-01-00-01-1C-B7-77-43-00-01-C9-14-1C-7C
+   DNS Servers.....................: ::
+                                     0.0.0.0
+```
+
+## Настройте R2 в качестве агента DHCP-ретрансляции для локальной сети на G0/0/1
+
+> Настройте команду ipv6 dhcp relay на интерфейсе R2 G0/0/1, указав адрес назначения интерфейса G0/0/0 на R1.
+  Также настройте команду managed-config-flag
+
+По каким-то причинам Packet Tracer не поддерживает dhcp relay для ipv6
