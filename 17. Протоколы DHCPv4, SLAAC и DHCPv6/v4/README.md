@@ -565,4 +565,77 @@ Approximate round trip times in milli-seconds:
 
 # <a name="part3"></a>Часть 3. Настройка и проверка DHCP-ретрансляции на R2
 ## Настройка R2 в качестве агента DHCP-ретрансляции для локальной сети на G0/0/1
+
+> Настройте команду ip helper-address на G0/0/1, указав IP-адрес G0/0/0 R1
+
+```shell
+R2(config)#interface g0/0/1
+R2(config-if)#ip helper-address 10.0.0.1
+```
+
 ## Попытка получить IP-адрес от DHCP на PC-B
+
+> Из командной строки компьютера PC-B выполните команду ipconfig /renew
+
+```shell
+C:\>ipconfig /renew
+
+   IP Address......................: 192.168.1.102
+   Subnet Mask.....................: 255.255.255.240
+   Default Gateway.................: 192.168.1.97
+   DNS Server......................: 0.0.0.0
+```
+
+> После завершения процесса обновления выполните команду ipconfig для просмотра новой информации об IP-адресе.
+
+```shell
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: CCNA-lab.com
+   Link-local IPv6 Address.........: FE80::202:4AFF:FE58:8822
+   IPv6 Address....................: ::
+   IPv4 Address....................: 192.168.1.102
+   Subnet Mask.....................: 255.255.255.240
+   Default Gateway.................: ::
+                                     192.168.1.97
+
+Bluetooth Connection:
+
+   Connection-specific DNS Suffix..: CCNA-lab.com
+   Link-local IPv6 Address.........: ::
+   IPv6 Address....................: ::
+   IPv4 Address....................: 0.0.0.0
+   Subnet Mask.....................: 0.0.0.0
+   Default Gateway.................: ::
+                                     0.0.0.0
+```
+
+> Проверьте подключение с помощью пинга IP-адреса интерфейса R1 G0/0/1.
+
+```shell
+C:\>ping 192.168.1.1
+
+Pinging 192.168.1.1 with 32 bytes of data:
+
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=254
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=254
+Reply from 192.168.1.1: bytes=32 time<1ms TTL=254
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=254
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 1ms, Average = 0ms
+```
+
+> Выполните show ip dhcp binding для R1 для проверки назначений адресов в DHCP.
+
+```shell
+R1#show ip dhcp binding 
+IP address       Client-ID/              Lease expiration        Type
+                 Hardware address
+192.168.1.6      00D0.975C.D2B2           --                     Automatic
+192.168.1.102    0002.4A58.8822           --                     Automatic
+```
