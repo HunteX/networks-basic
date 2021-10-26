@@ -143,3 +143,183 @@ S2(config-vlan)#name ParkingLot
 ```
 
 # <a name="part3"></a>Часть 3. Настройки безопасности коммутатора
+## Шаг 3.1. Релизация магистральных соединений 802.1Q
+
+> 3.1.a. Настройте все магистральные порты Fa0/1 на обоих коммутаторах для использования VLAN 333 в качестве native VLAN
+
+```shell
+S1(config)#interface fa0/1
+S1(config-if)#switchport mode trunk
+S1(config-if)#switchport trunk native vlan 333
+```
+
+```shell
+S2(config)#interface fa0/1
+S2(config-if)#switchport mode trunk
+S2(config-if)#switchport trunk native vlan 333
+```
+
+> 3.1.b. Убедитесь, что режим транкинга успешно настроен на всех коммутаторах.
+show interface trunk
+
+```shell
+S1#show interfaces trunk 
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      333
+
+Port        Vlans allowed on trunk
+Fa0/1       1-1005
+
+Port        Vlans allowed and active in management domain
+Fa0/1       1,10,333,999
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       1,10,333,999
+```
+
+```shell
+S2#show interfaces trunk 
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      333
+
+Port        Vlans allowed on trunk
+Fa0/1       1-1005
+
+Port        Vlans allowed and active in management domain
+Fa0/1       1,10,333,999
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       1,10,333,999
+```
+
+> 3.1.c. Отключить согласование DTP F0/1 на S1 и S2
+
+```shell
+
+```
+
+> 3.1.d. Проверьте с помощью команды show interfaces
+show interfaces f0/1 switchport | include Negotiation
+
+```shell
+S1(config-if)#switchport nonegotiate
+S1#show interfaces fa0/1 switchport | include Negotiation
+Negotiation of Trunking: Off
+```
+
+```shell
+S2(config)#interface fa0/1
+S2(config-if)#switchport nonegotiate
+```
+
+## Шаг 3.2. Настройка портов доступа
+
+> 3.2.a. На S1 настройте F0/5 и F0/6 в качестве портов доступа и свяжите их с VLAN 10.
+
+```shell
+
+```
+
+> 3.2.b. На S2 настройте порт доступа Fa0/18 и свяжите его с VLAN 10.
+
+```shell
+S1(config)#interface range fa0/5-6
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 10
+```
+
+```shell
+S2(config)#interface fa0/18
+S2(config-if)#switchport mode access
+S2(config-if)#switchport access vlan 10
+```
+
+## Шаг 3.3. Безопасность неиспользуемых портов коммутатора
+
+> 3.3.a. На S1 и S2 переместите неиспользуемые порты из VLAN 1 в VLAN 999 и отключите неиспользуемые порты.
+
+```shell
+S1(config)#interface range fa0/2-4,fa0/7-24,g0/1-2
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+```
+
+```shell
+S2(config)#interface range fa0/2-17,fa0/19-24,g0/1-2
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+```
+
+> 3.3.b. Убедитесь, что неиспользуемые порты отключены и связаны с VLAN 999, введя команду  show.
+show interfaces status
+
+```shell
+S1#show interfaces status
+Port      Name               Status       Vlan       Duplex  Speed Type
+Fa0/1                        connected    1          auto    auto  10/100BaseTX
+Fa0/2                        disabled 999        auto    auto  10/100BaseTX
+Fa0/3                        disabled 999        auto    auto  10/100BaseTX
+Fa0/4                        disabled 999        auto    auto  10/100BaseTX
+Fa0/5                        connected    10         auto    auto  10/100BaseTX
+Fa0/6                        connected    10         auto    auto  10/100BaseTX
+Fa0/7                        disabled 999        auto    auto  10/100BaseTX
+Fa0/8                        disabled 999        auto    auto  10/100BaseTX
+Fa0/9                        disabled 999        auto    auto  10/100BaseTX
+Fa0/10                       disabled 999        auto    auto  10/100BaseTX
+Fa0/11                       disabled 999        auto    auto  10/100BaseTX
+Fa0/12                       disabled 999        auto    auto  10/100BaseTX
+Fa0/13                       disabled 999        auto    auto  10/100BaseTX
+Fa0/14                       disabled 999        auto    auto  10/100BaseTX
+Fa0/15                       disabled 999        auto    auto  10/100BaseTX
+Fa0/16                       disabled 999        auto    auto  10/100BaseTX
+Fa0/17                       disabled 999        auto    auto  10/100BaseTX
+Fa0/18                       disabled 999        auto    auto  10/100BaseTX
+Fa0/19                       disabled 999        auto    auto  10/100BaseTX
+Fa0/20                       disabled 999        auto    auto  10/100BaseTX
+Fa0/21                       disabled 999        auto    auto  10/100BaseTX
+Fa0/22                       disabled 999        auto    auto  10/100BaseTX
+Fa0/23                       disabled 999        auto    auto  10/100BaseTX
+Fa0/24                       disabled 999        auto    auto  10/100BaseTX
+Gig0/1                       disabled 999        auto    auto  10/100BaseTX
+Gig0/2                       disabled 999        auto    auto  10/100BaseTX
+```
+
+```shell
+S2#show interfaces status
+Port      Name               Status       Vlan       Duplex  Speed Type
+Fa0/1                        connected    1          auto    auto  10/100BaseTX
+Fa0/2                        disabled 999        auto    auto  10/100BaseTX
+Fa0/3                        disabled 999        auto    auto  10/100BaseTX
+Fa0/4                        disabled 999        auto    auto  10/100BaseTX
+Fa0/5                        disabled 999        auto    auto  10/100BaseTX
+Fa0/6                        disabled 999        auto    auto  10/100BaseTX
+Fa0/7                        disabled 999        auto    auto  10/100BaseTX
+Fa0/8                        disabled 999        auto    auto  10/100BaseTX
+Fa0/9                        disabled 999        auto    auto  10/100BaseTX
+Fa0/10                       disabled 999        auto    auto  10/100BaseTX
+Fa0/11                       disabled 999        auto    auto  10/100BaseTX
+Fa0/12                       disabled 999        auto    auto  10/100BaseTX
+Fa0/13                       disabled 999        auto    auto  10/100BaseTX
+Fa0/14                       disabled 999        auto    auto  10/100BaseTX
+Fa0/15                       disabled 999        auto    auto  10/100BaseTX
+Fa0/16                       disabled 999        auto    auto  10/100BaseTX
+Fa0/17                       disabled 999        auto    auto  10/100BaseTX
+Fa0/18                       connected    10         auto    auto  10/100BaseTX
+Fa0/19                       disabled 999        auto    auto  10/100BaseTX
+Fa0/20                       disabled 999        auto    auto  10/100BaseTX
+Fa0/21                       disabled 999        auto    auto  10/100BaseTX
+Fa0/22                       disabled 999        auto    auto  10/100BaseTX
+Fa0/23                       disabled 999        auto    auto  10/100BaseTX
+Fa0/24                       disabled 999        auto    auto  10/100BaseTX
+Gig0/1                       disabled 999        auto    auto  10/100BaseTX
+Gig0/2                       disabled 999        auto    auto  10/100BaseTX
+```
+
+## Шаг 3.4. Документирование и реализация функций безопасности порта
+
+> 3.4.a. На S1, введите команду show port-security interface f0/6 
+ для отображения настроек по умолчанию безопасности порта для интерфейса F0/6.
+  Запишите свои ответы ниже
+
