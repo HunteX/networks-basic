@@ -48,8 +48,7 @@ R1(config-if)#description Link to S1
 R1(config-if)#ip address 192.168.10.1 255.255.255.0
 R1(config-if)#no shutdown
 R1(config-if)#line console 0
-R1(config-line)#loggin sync
-R1(config-line)#loggin synchronous 
+R1(config-line)#logging synchronous
 R1(config-line)#exec-timeout 0 0
 ```
 
@@ -193,11 +192,6 @@ Fa0/1       1,10,333,999
 ```
 
 > 3.1.c. Отключить согласование DTP F0/1 на S1 и S2
-
-```shell
-
-```
-
 > 3.1.d. Проверьте с помощью команды show interfaces
 show interfaces f0/1 switchport | include Negotiation
 
@@ -216,9 +210,7 @@ S2(config-if)#switchport nonegotiate
 
 > 3.2.a. На S1 настройте F0/5 и F0/6 в качестве портов доступа и свяжите их с VLAN 10.
 
-```shell
-
-```
+Выполнено.
 
 > 3.2.b. На S2 настройте порт доступа Fa0/18 и свяжите его с VLAN 10.
 
@@ -323,3 +315,149 @@ Gig0/2                       disabled 999        auto    auto  10/100BaseTX
  для отображения настроек по умолчанию безопасности порта для интерфейса F0/6.
   Запишите свои ответы ниже
 
+### Конфигурация безопасности порта по умолчанию:
+| Функция                                        | Настройка по умолчанию    |
+| :--------------------------------------------- | :------------------------ |
+| Защита портов                                  | Disabled                  |
+| Максимальное количество записей MAC-адресов    | 1                         |
+| Режим проверки на нарушение безопасности       | Shutdown                  |
+| Aging Time                                     | 0 mins                    |
+| Aging Type                                     | Absolute                  |
+| Secure Static Address Aging                    | Disabled                  |
+| Sticky MAC Address                             | 0                         |
+
+> 3.4.b. На S1 включите защиту порта на F0 / 6 со следующими настройками:
+Максимальное количество записей MAC-адресов: 3
+Режим безопасности: restrict
+Aging time: 60 мин.
+Aging type: неактивный
+
+К сожалению, не удалось поменять aging type - не нашел в packet tracer этой настройки.
+Проверил в Termilab - там работает.
+
+```shell
+S1(config)#interface fa0/6
+S1(config-if)#switchport port-security
+S1(config-if)#switchport port-security maximum 3
+S1(config-if)#switchport port-security violation restrict 
+S1(config-if)#switchport port-security aging time 60
+```
+
+> 3.4.c. Verify port security on S1 F0/6
+
+```shell
+
+S1#show port-security interface fa0/6
+Port Security              : Enabled
+Port Status                : Secure-up
+Violation Mode             : Restrict
+Aging Time                 : 60 mins
+Aging Type                 : Absolute
+SecureStatic Address Aging : Disabled
+Maximum MAC Addresses      : 3
+Total MAC Addresses        : 0
+Configured MAC Addresses   : 0
+Sticky MAC Addresses       : 0
+Last Source Address:Vlan   : 0000.0000.0000:0
+Security Violation Count   : 0
+```
+
+```shell
+S1#show port-security address
+			Secure Mac Address Table
+-------------------------------------------------------------------------------
+Vlan	Mac Address	Type			Ports		Remaining Age
+								(mins)
+----	-----------	----			-----		-------------
+------------------------------------------------------------------------------
+Total Addresses in System (excluding one mac per port)     : 0
+Max Addresses limit in System (excluding one mac per port) : 102
+```
+
+По какой-то причине в packet tracer не отображается эта информация.
+В Termilab - работает.
+
+> 3.4.d. Включите безопасность порта для F0 / 18 на S2. 
+  Настройте каждый активный порт доступа таким образом, чтобы он автоматически добавлял адреса МАС,
+ изученные на этом порту, в текущую конфигурацию.
+
+```shell
+S2(config)#interface fa0/18
+S2(config-if)#switchport port-security 
+S2(config-if)#switchport port-security mac-address sticky
+```
+
+> 3.4.e. Настройте следующие параметры безопасности порта на S2 F / 18:
+Максимальное количество записей MAC-адресов: 2
+Тип безопасности: Protect
+Aging time: 60 мин.
+
+```shell
+S2(config-if)#switchport port-security maximum 2
+S2(config-if)#switchport port-security violation protect 
+S2(config-if)#switchport port-security aging time 60
+```
+
+> 3.4.f. Проверка функции безопасности портов на S2 F0/18.
+S2# show port-security interface f0/18
+
+```shell
+S2#show port-security interface fa0/18
+Port Security              : Enabled
+Port Status                : Secure-up
+Violation Mode             : Protect
+Aging Time                 : 60 mins
+Aging Type                 : Absolute
+SecureStatic Address Aging : Disabled
+Maximum MAC Addresses      : 2
+Total MAC Addresses        : 0
+Configured MAC Addresses   : 0
+Sticky MAC Addresses       : 0
+Last Source Address:Vlan   : 0000.0000.0000:0
+Security Violation Count   : 0
+```
+
+## Шаг 3.5. Реализовать безопасность DHCP snooping
+
+3.5.a. На S2 включите DHCP snooping и настройте DHCP snooping во VLAN 10.
+
+```shell
+S2(config)#ip dhcp snooping
+S2(config)#ip dhcp snooping vlan 10
+```
+
+3.5.b. Настройте магистральные порты на S2 как доверенные порты.
+
+```shell
+S2(config)#interface fa0/1
+S2(config-if)#ip dhcp snooping trust
+```
+
+3.5.c. Ограничьте ненадежный порт Fa0/18 на S2 пятью DHCP-пакетами в секунду.
+
+```shell
+S2(config-if)#interface fa0/18
+S2(config-if)#ip dhcp snooping limit rate 3
+```
+
+3.5.d. Проверка DHCP Snooping на S2
+
+```shell
+S2#show ip dhcp snooping
+Switch DHCP snooping is enabled
+DHCP snooping is configured on following VLANs:
+10
+Insertion of option 82 is enabled
+Option 82 on untrusted port is not allowed
+Verification of hwaddr field is enabled
+Interface                  Trusted    Rate limit (pps)
+-----------------------    -------    ----------------
+FastEthernet0/1            yes        unlimited       
+FastEthernet0/18           no         3
+```
+
+> 3.5.e. В командной строке на PC-B освободите, а затем обновите IP-адрес
+
+```shell
+
+```
