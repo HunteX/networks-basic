@@ -71,4 +71,75 @@ Vlan1                  unassigned      YES unset  administratively down down
 Всё работает.
 
 # <a name="part2"></a>Часть 2. Настройка сетей VLAN
+## Шаг 2.1. Сконфигруриуйте VLAN 10
+
+> Добавьте VLAN 10 на S1 и S2 и назовите VLAN - Management
+
+```shell
+Switch>enable
+Switch#configure terminal
+Switch(config)#hostname S1
+S1(config)#vlan 10
+S1(config-vlan)#name Management
+S1(config-vlan)#^Z
+S1#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+```
+
+```shell
+Switch>enable
+Switch#configure terminal
+Switch(config)#hostname S2
+S2(config)#vlan 10
+S2(config-vlan)#name Management
+S2(config-vlan)#^Z
+S2#copy running-config startup-config 
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+```
+
+## Шаг 2.2. Сконфигруриуйте SVI для VLAN 10
+
+> Настройте IP-адрес в соответствии с таблицей адресации для SVI для VLAN 10 на S1 и S2.
+  Включите интерфейсы SVI и предоставьте описание для интерфейса
+
+```shell
+S1(config)#interface vlan 10
+S1(config-if)#ip address 192.168.10.201 255.255.255.0
+S1(config-if)#description SVI
+```
+
+```shell
+S2(config)#interface vlan 10
+S2(config-if)#ip address 192.168.10.202 255.255.255.0
+S2(config-if)#description SVI
+```
+
+## Шаг 2.3. Настройте VLAN 333 с именем Native на S1 и S2
+
+```shell
+S1(config)#vlan 333
+S1(config-vlan)#name Native
+```
+
+```shell
+S2(config)#vlan 333
+S2(config-vlan)#name Native
+```
+
+## Шаг 2.4. Настройте VLAN 999 с именем ParkingLot на S1 и S2
+
+```shell
+S1(config-vlan)#vlan 999
+S1(config-vlan)#name ParkingLot
+```
+
+```shell
+S2(config-vlan)#vlan 999
+S2(config-vlan)#name ParkingLot
+```
+
 # <a name="part3"></a>Часть 3. Настройки безопасности коммутатора
