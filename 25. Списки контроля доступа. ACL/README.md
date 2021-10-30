@@ -4,6 +4,11 @@
 * [Таблица VLAN](#table2)
 * [Часть 1. Создание сети и настройка основных параметров устройства](#part1)
 * [Часть 2. Настройка и проверка списков расширенного контроля доступа](#part2)
+* [Часть 3. Настройте транки (магистральные каналы)](#part3)
+* [Часть 4. Настройте маршрутизацию](#part4)
+* [Часть 5. Настройте удаленный доступ](#part5)
+* [Часть 6. Проверка подключения](#part6)
+* [Часть 7. Настройка и проверка списков контроля доступа (ACL)](#part7)
 
 # <a name="scheme"></a>Схема стенда
 ![](scheme.png)
@@ -45,3 +50,143 @@
 
 Выполнено.
 
+# <a name="part2"></a>Часть 2. Настройка сетей VLAN на коммутаторах
+# Шаг 2.1. Создайте сети VLAN на коммутаторах
+
+> 2.1.a. Создайте необходимые VLAN и назовите их на каждом коммутаторе из приведенной выше таблицы.
+
+```shell
+S1(config)#vlan 20
+S1(config-vlan)#name Management
+S1(config-vlan)#vlan 30
+S1(config-vlan)#name Operations
+S1(config-vlan)#vlan 40
+S1(config-vlan)#name Sales
+S1(config-vlan)#vlan 999
+S1(config-vlan)#name ParkingLot
+S1(config-vlan)#vlan 1000
+S1(config-vlan)#name Native
+```
+
+```shell
+S2(config)#vlan 20
+S2(config-vlan)#name Management
+S2(config-vlan)#vlan 30
+S2(config-vlan)#name Operations
+S2(config-vlan)#vlan 40
+S2(config-vlan)#name Sales
+S2(config-vlan)#vlan 999
+S2(config-vlan)#name ParkingLot
+S2(config-vlan)#vlan 1000
+S2(config-vlan)#name Native
+```
+
+> 2.1.b. Настройте интерфейс управления и шлюз по умолчанию на каждом коммутаторе, используя информацию об IP-адресе в таблице адресации.
+
+```shell
+S1(config)#int vlan 20
+S1(config-if)#ip address 10.20.0.2 255.255.255.0
+S1(config-if)#no shutdown
+S1(config-if)#exit
+S1(config)#ip default-gateway 10.20.0.1
+```
+
+```shell
+S2(config)#int vlan 20
+S2(config-if)#ip address 10.20.0.3 255.255.255.0
+S2(config-if)#no shutdown
+S2(config-if)#exit
+S2(config)#ip default-gateway 10.20.0.
+```
+
+> 2.1.c. Назначьте все неиспользуемые порты коммутатора VLAN Parking Lot,
+ настройте их для статического режима доступа и административно деактивируйте их.
+
+```shell
+S1(config)#interface range f0/2-4, f0/7-24, g0/1-2
+S1(config-if-range)#switchport mode access
+S1(config-if-range)#switchport access vlan 999
+S1(config-if-range)#shutdown
+```
+
+```shell
+S2(config)#interface range f0/2-4, f0/6-17, g0/1-2
+S2(config-if-range)#switchport mode access
+S2(config-if-range)#switchport access vlan 999
+S2(config-if-range)#shutdown
+```
+
+## Шаг 2.2. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+
+> 2.2.a. Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
+
+```shell
+S1(config)#interface f0/6
+S1(config-if)#switchport mode access
+S1(config-if)#switchport access vlan 30
+```
+
+```shell
+S2(config)#interface fa0/5
+S2(config-if)#switchport mode access
+S2(config-if)#switchport access vlan 20
+S2(config-if)#interface fa0/18
+S2(config-if)#switchport mode access
+S2(config-if)#switchport access vlan 40
+```
+
+> 2.2.b. Выполните команду show vlan brief, чтобы убедиться, что сети VLAN назначены правильным интерфейсам.
+
+```shell
+S1#show vlan brief 
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/5
+20   Management                       active    
+30   Operations                       active    Fa0/6
+40   Sales                            active    
+999  ParkingLot                       active    Fa0/2, Fa0/3, Fa0/4, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11
+                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15
+                                                Fa0/16, Fa0/17, Fa0/18, Fa0/19
+                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23
+                                                Fa0/24, Gig0/1, Gig0/2
+1000 Native                           active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+```
+
+```shell
+S2#show vlan brief 
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/19, Fa0/20, Fa0/21
+                                                Fa0/22, Fa0/23, Fa0/24
+20   Management                       active    Fa0/5
+30   Operations                       active    
+40   Sales                            active    Fa0/18
+999  ParkingLot                       active    Fa0/2, Fa0/3, Fa0/4, Fa0/6
+                                                Fa0/7, Fa0/8, Fa0/9, Fa0/10
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Gig0/1
+                                                Gig0/2
+1000 Native                           active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+```
+
+# <a name="part3"></a>Часть 3. Настройте транки (магистральные каналы)
+
+# <a name="part4"></a>Часть 4. Настройте маршрутизацию
+
+# <a name="part5"></a>Часть 5. Настройте удаленный доступ
+
+# <a name="part6"></a>Часть 6. Проверка подключения
+
+# <a name="part7"></a>Часть 7. Настройка и проверка списков контроля доступа (ACL)
