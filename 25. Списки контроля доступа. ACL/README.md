@@ -212,11 +212,11 @@ S2(config-if)#switchport trunk native vlan 1000
 > 3.1.c. В качестве другой части конфигурации транка укажите, что VLAN 10, 20, 30 и 1000 разрешены в транке.
 
 ```shell
-S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S1(config-if)#switchport trunk allowed vlan 20,30,40,1000
 ```
 
 ```shell
-S2(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S2(config-if)#switchport trunk allowed vlan 20,30,40,1000
 ```
 
 > 3.1.d. Выполните команду show interfaces trunk для проверки портов магистрали, собственной VLAN и разрешенных VLAN через магистраль.
@@ -225,15 +225,19 @@ S2(config-if)#switchport trunk allowed vlan 10,20,30,1000
 S1#show interfaces trunk 
 Port        Mode         Encapsulation  Status        Native vlan
 Fa0/1       on           802.1q         trunking      1000
+Fa0/5       on           802.1q         trunking      1000
 
 Port        Vlans allowed on trunk
-Fa0/1       10,20,30,1000
+Fa0/1       20,30,40,1000
+Fa0/5       10,20,30,1000
 
 Port        Vlans allowed and active in management domain
-Fa0/1       20,30,1000
+Fa0/1       20,30,40,1000
+Fa0/5       20,30,1000
 
 Port        Vlans in spanning tree forwarding state and not pruned
-Fa0/1       20,30,1000
+Fa0/1       20,30,40,1000
+Fa0/5       20,30,1000
 ```
 
 ```shell
@@ -242,13 +246,13 @@ Port        Mode         Encapsulation  Status        Native vlan
 Fa0/1       on           802.1q         trunking      1000
 
 Port        Vlans allowed on trunk
-Fa0/1       10,20,30,1000
+Fa0/1       20,30,40,1000
 
 Port        Vlans allowed and active in management domain
-Fa0/1       20,30,1000
+Fa0/1       20,30,40,1000
 
 Port        Vlans in spanning tree forwarding state and not pruned
-Fa0/1       20,30,1000
+Fa0/1       20,30,40,1000
 ```
 
 ## Шаг 3.2. Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1
@@ -259,7 +263,7 @@ Fa0/1       20,30,1000
 S1(config)#interface fa0/5
 S1(config-if)#switchport mode trunk 
 S1(config-if)#switchport trunk native vlan 1000
-S1(config-if)#switchport trunk allowed vlan 10,20,30,1000
+S1(config-if)#switchport trunk allowed vlan 20,30,40,1000
 ```
 
 > 3.2.b. Сохраните текущую конфигурацию в файл загрузочной конфигурации.
@@ -389,7 +393,29 @@ R1(config-line)#login local
  R1(config)# ip http authentication local
 
 Packet Tracer не поддерживает запуск HTTP(s) сервера на роутере.
+Поэтому вместо HTTPS везде запустил Telnet.
 
 # <a name="part6"></a>Часть 6. Проверка подключения
+
+## Шаг 6.1. Настройте узлы ПК
+
+Выполнено.
+
+## Шаг 6.2. Выполните следующие тесты. Эхозапрос должен пройти успешно
+
+Поправил ошибку в разрешенных VLAN.
+Включил ip routing на R1.
+
+| От            | Протокол           | Назначение     | Результат |
+| :------------ | :----------------- | :------------- | :-------: |
+| PC-A          | Ping               | 10.40.0.10     | Успешно   |
+| PC-A          | Ping               | 10.20.0.1      | Успешно   |
+| PC-B          | Ping               | 10.30.0.10     | Успешно   |
+| PC-B          | Ping               | 10.20.0.1      | Успешно   |
+| PC-B          | Ping               | 172.16.1.1     | Успешно   |
+| PC-B          | Telnet             | 10.20.0.1      | Успешно   |
+| PC-B          | Telnet             | 172.16.1.1     | Успешно   |
+| PC-B          | SSH                | 10.20.0.1      | Успешно   |
+| PC-B          | SSH                | 172.16.1.1     | Успешно   |
 
 # <a name="part7"></a>Часть 7. Настройка и проверка списков контроля доступа (ACL)
