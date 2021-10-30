@@ -291,6 +291,75 @@ Fa0/5       20,30,1000
 
 # <a name="part4"></a>Часть 4. Настройте маршрутизацию
 
+## Шаг 4.1. Настройка маршрутизации между сетями VLAN на R1
+
+> 4.1.a. Активируйте интерфейс G0/0/1 на маршрутизаторе.
+
+Выполнено ранее.
+
+> 4.1.b. Настройте подинтерфейсы для каждой VLAN, как указано в таблице IP-адресации.
+  Все подинтерфейсы используют инкапсуляцию 802.1Q. 
+  Убедитесь, что подинтерфейс для собственной VLAN не имеет назначенного IP-адреса. Включите описание для каждого подинтерфейса.
+
+```shell
+R1(config)#interface g0/0/1.20
+R1(config-subif)#encapsulation dot1Q 20
+R1(config-subif)#ip address 10.20.0.1 255.255.255.0
+R1(config-subif)#description VLAN 20
+R1(config-subif)#no shutdown
+
+R1(config-subif)#interface g0/0/1.30
+R1(config-subif)#encapsulation dot1Q 30
+R1(config-subif)#ip address 10.30.0.1 255.255.255.0
+R1(config-subif)#description VLAN 30
+R1(config-subif)#no shutdown
+
+R1(config-subif)#interface g0/0/1.40
+R1(config-subif)#encapsulation dot1Q 40
+R1(config-subif)#ip address 10.40.0.1 255.255.255.0
+R1(config-subif)#description VLAN 40
+R1(config-subif)#no shutdown
+
+R1(config-subif)#interface g0/0/1.1000
+R1(config-subif)#encapsulation dot1Q 1000 native 
+R1(config-subif)#description VLAN NATIVE
+R1(config-subif)#no shutdown
+```
+
+> 4.1.c. Настройте интерфейс Loopback 1 на R1 с адресацией из приведенной выше таблицы.
+
+```shell
+R1(config)#interface lo1
+R1(config-if)#ip address 172.16.1.1 255.255.255.0
+R1(config-if)#no shutdown
+```
+
+> 4.1.d. С помощью команды show ip interface brief проверьте конфигурацию подынтерфейса.
+
+```shell
+R1#show ip interface brief 
+Interface              IP-Address      OK? Method Status                Protocol 
+GigabitEthernet0/0/0   unassigned      YES unset  administratively down down 
+GigabitEthernet0/0/1   unassigned      YES unset  up                    up 
+GigabitEthernet0/0/1.2010.20.0.1       YES manual up                    up 
+GigabitEthernet0/0/1.3010.30.0.1       YES manual up                    up 
+GigabitEthernet0/0/1.4010.40.0.1       YES manual up                    up 
+GigabitEthernet0/0/1.1000unassigned      YES unset  up                    up 
+GigabitEthernet0/0/2   unassigned      YES unset  administratively down down 
+Loopback1              172.16.1.1      YES manual up                    up 
+Vlan1                  unassigned      YES unset  administratively down down
+```
+
+## Шаг 4.2. Настройка интерфейса R2 g0/0/1 с использованием адреса из таблицы и маршрута по умолчанию с адресом следующего перехода 10.20.0.1
+
+```shell
+R2(config)#interface g0/0/1
+R2(config-if)#ip address 10.20.0.4 255.255.255.0
+R2(config-if)#no shutdown
+R2(config-if)#exit
+R2(config)#ip route 0.0.0.0 0.0.0.0 10.20.0.1
+```
+
 # <a name="part5"></a>Часть 5. Настройте удаленный доступ
 
 # <a name="part6"></a>Часть 6. Проверка подключения
