@@ -229,7 +229,7 @@ Fa0/5       on           802.1q         trunking      1000
 
 Port        Vlans allowed on trunk
 Fa0/1       20,30,40,1000
-Fa0/5       10,20,30,1000
+Fa0/5       20,30,40,1000
 
 Port        Vlans allowed and active in management domain
 Fa0/1       20,30,40,1000
@@ -281,8 +281,8 @@ Fa0/1       on           802.1q         trunking      1000
 Fa0/5       on           802.1q         trunking      1000
 
 Port        Vlans allowed on trunk
-Fa0/1       10,20,30,1000
-Fa0/5       10,20,30,1000
+Fa0/1       20,30,40,1000
+Fa0/5       20,30,40,1000
 
 Port        Vlans allowed and active in management domain
 Fa0/1       20,30,1000
