@@ -421,22 +421,67 @@ Packet Tracer не поддерживает запуск HTTP(s) сервера 
 # <a name="part7"></a>Часть 7. Настройка и проверка списков контроля доступа (ACL)
 
 > При проверке базового подключения компания требует реализации следующих политик безопасности:
- Политика1. Сеть Sales не может использовать SSH в сети Management (но в  другие сети SSH разрешен).
- Политика 2. Сеть Sales не имеет доступа к IP-адресам в сети Management с помощью любого веб-протокола (HTTP/HTTPS). 
-  Сеть Sales также не имеет доступа к интерфейсам R1 с помощью любого веб-протокола. 
-  Разрешён весь другой веб-трафик (обратите внимание — Сеть Sales  может получить доступ к интерфейсу Loopback 1 на R1).
- Политика 3. Сеть Sales не может отправлять эхо-запросы ICMP в сети Operations или Management. Разрешены эхо-запросы ICMP к другим адресатам.
- Политика 4: Cеть Operations  не может отправлять ICMP эхозапросы в сеть Sales. Разрешены эхо-запросы ICMP к другим адресатам.
-
-
+ Политика 1. Сеть Sales не может использовать SSH в сети Management (но в другие сети SSH разрешен).
+ Политика 2. Сеть Sales не имеет доступа к IP-адресам в сети Management с помощью Telnet. 
+  Сеть Sales также не имеет доступа к интерфейсам R1 с помощью Telnet.
+  Разрешён весь другой Telnet трафик (обратите внимание — Сеть Sales может получить доступ к интерфейсу Loopback 1 на R1).
+ Политика 3. Сеть Sales не может отправлять эхо-запросы ICMP в сети Operations или Management.
+  Разрешены эхо-запросы ICMP к другим адресатам.
+ Политика 4: Cеть Operations не может отправлять ICMP эхо-запросы в сеть Sales.
+  Разрешены эхо-запросы ICMP к другим адресатам.
 
 ## Шаг 7.1. Проанализируйте требования к сети и политике безопасности для планирования реализации ACL.
 
-
+* Для сети Sales запретить ICMP в сеть Operations
+* Для сети Sales разрешить остальной ICMP трафик
+* Для сети Sales запретить SSH в сеть Management
+* Для сети Sales разрешить остальной SSH трафик
+* Для сети Sales разрешить Telnet на интерфейс R1 Loopback 1
+* Для сети Sales запретить Telnet на остальные интерфейсы R1
+* Для сети Sales разрешить остальной Telnet трафик
+* Для сети Sales запретить весь трафик в сеть Management
+* Для сети Operations запретить ICMP в сеть Sales
+* Для сети Operations разрешить остальной ICMP трафик
 
 ## Шаг 7.2. Разработка и применение расширенных списков доступа, которые будут соответствовать требованиям политики безопасности.
 
+Список для Sales:
 
+```shell
+no ip access-list extended SALES-IN
+ip access-list extended SALES-IN
+ remark Access rules for Sales network input traffic
+ deny tcp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255 eq 22
+ permit tcp 10.40.0.0 0.0.0.255 any eq 22
+ permit tcp 10.40.0.0 0.0.0.255 host 172.16.1.1 eq telnet
+ deny tcp 10.40.0.0 0.0.0.255 host 10.20.0.1 eq telnet
+ deny tcp 10.40.0.0 0.0.0.255 host 10.30.0.1 eq telnet
+ deny tcp 10.40.0.0 0.0.0.255 host 10.40.0.1 eq telnet
+ permit tcp 10.40.0.0 0.0.0.255 any eq telnet
+ deny icmp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255
+ deny icmp 10.40.0.0 0.0.0.255 10.30.0.0 0.0.0.255
+ permit icmp 10.40.0.0 0.0.0.255 any
+ deny ip 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255
+```
+
+Список для Operations:
+
+```shell
+no ip access-list extended OPERATIONS-IN
+ip access-list extended OPERATIONS-IN
+ remark Access rules for Operations network input traffic
+ deny icmp 10.30.0.0 0.0.0.255 10.40.0.0 0.0.0.255
+ permit icmp 10.30.0.0 0.0.0.255 any
+```
+
+Применение:
+
+```shell
+R1(config)#interface g0/0/1.40
+R1(config-subif)#ip access-group SALES-IN in
+R1(config)#interface g0/0/1.30
+R1(config-subif)#ip access-group OPERATIONS-IN in
+```
 
 ## Шаг 7.3. Убедитесь, что политики безопасности применяются развернутыми списками доступа.
 
