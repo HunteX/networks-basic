@@ -10,6 +10,8 @@
 * [DHCP/SLAAC](#dhcpv6)
 * [Безопасность](#security)
 * [OSPF](#ospf)
+* [ACL](#acl)
+* [NAT](#nat)
 
 # <a name="passwords"></a>Пароли
 ## Пароль на privileged mode
@@ -407,3 +409,32 @@ Note: Always enable BPDU Guard on all PortFast-enabled ports.
 | show ip ospf neighbor                                           | Отображает состояние OSPF с соседями               |
 | show ip ospf neighbor detail                                    | Отображает подробное состояние OSPF с соседями     |
 | show ip route ospf                                              | Отображает маршруты OSPF                           |
+
+# <a name="acl">ACL
+
+## Команды для стандартных
+| Команда                                                                       | Описание                                                          |
+| ----------------------------------------------------------------------------- | :---------------------------------------------------------------- |
+| access-list \<num\> \<deny,permit,remark\> source \<source-wildcard\> \<log\> | Создает нумерованный список                                       |
+| ip access-list standard \<acl-list-name\>                                     | Создает именованный список и переходит в режим его редактирования |
+
+## Команды для расширенных
+
+```shell
+access-list access-list-number {deny | permit | remark text} protocol source source-wildcard [operator {port}] destination destination-wildcard [operator {port}] [established] [log]
+```
+
+## Общие команды
+| Команда                                                                     | Описание                                                          |
+| --------------------------------------------------------------------------- | :---------------------------------------------------------------- |
+| ip access-group \<access-list-number,access-list-name\> \<in,out\>          | Применяет список (выполнять на интерфейсе)                        |
+| no access-list \<num\>                                                      | Удаляет список                                                    |
+| show run                                                                    | Отображает списки в конфиге                                       |
+| show ip int Serial 0/1/0                                                    | Отображает списки на интерфейсе                                   |
+| show access-lists                                                           | Отображает списки                                                 |
+| clear access-list counters \<acl-list-name\>                                | Сбрасывает статистику по списку                                   |
+| access-class \<access-list-number,access-list-name\> \<in,out\>             | Применяет список на VTY                                           |
+
+# <a name="nat">NAT
+
+## Команды
