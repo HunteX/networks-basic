@@ -439,15 +439,16 @@ ip access-list extended <access-list-name>
 # <a name="nat">NAT
 
 ## Команды
-| Команда                                                                    | Описание                                           |
-| -------------------------------------------------------------------------- | :------------------------------------------------- |
-| ip nat inside source static \<ip-inside\> \<ip-outside\>                   | Настраивает static NAT                             |
-| ip nat \<inside,outside\>                                                  | Задает inside или outside на интерфейсе            |
-| show ip nat translations                                                   | Отображает текущие соединения                      |
-| show ip nat translation verbose                                            | Отображает текущие соединения (подробно)           |
-| show ip nat statistics                                                     | Отображает статистику                              |
-| ip nat pool \<name\> \<ip-start\> \<ip-end\> netmask \<mask\>              | Создает пул адресов                                |
-| ip nat inside source list \<acl-list-num\> pool \<pool-name\>              | Добавляет ACL к пулу                               |
-| clear ip nat translation *                                                 | Очищает таблицу трансляций                         |
-| ip nat inside source list \<access-list-num\> interface \<iface\> overload | Настраивает PAT (для одного адреса)                |
-| ip nat inside source list \<access-list-num\> pool \<pool-name\> overload  | Настраивает PAT (для пула адресов)                 |
+| Команда                                                                    | Описание                                             |
+| -------------------------------------------------------------------------- | :--------------------------------------------------- |
+| ip nat inside source static \<ip-inside\> \<ip-outside\>                   | Настраивает static NAT                               |
+| ip nat \<inside,outside\>                                                  | Задает inside или outside на интерфейсе              |
+| show ip nat translations                                                   | Отображает текущие соединения                        |
+| show ip nat translation verbose                                            | Отображает текущие соединения (подробно)             |
+| show ip nat statistics                                                     | Отображает статистику                                |
+| ip nat pool \<name\> \<ip-start\> \<ip-end\> netmask \<mask\>              | Создает пул адресов                                  |
+| ip nat inside source list \<acl-list-num\> pool \<pool-name\>              | Добавляет ACL к пулу                                 |
+| clear ip nat translation *                                                 | Очищает таблицу трансляций                           |
+| ip nat inside source list \<access-list-num\> interface \<iface\> overload | Настраивает PAT (для одного адреса)                  |
+| ip nat inside source list \<access-list-num\> pool \<pool-name\> overload  | Настраивает PAT (для пула адресов)                   |
+| ip nat translation timeout \<timeout-seconds\>                             | Задает таймаут для трансляций (24 часа по умолчанию) |
