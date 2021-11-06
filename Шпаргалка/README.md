@@ -422,6 +422,7 @@ Note: Always enable BPDU Guard on all PortFast-enabled ports.
 
 ```shell
 access-list access-list-number {deny | permit | remark text} protocol source source-wildcard [operator {port}] destination destination-wildcard [operator {port}] [established] [log]
+ip access-list extended <access-list-name>
 ```
 
 ## Общие команды
