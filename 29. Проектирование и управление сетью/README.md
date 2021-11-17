@@ -150,4 +150,88 @@ Management address(es):
 
 # <a name="part3"></a>Часть 3. Обнаружение сетевых ресурсов с помощью протокола LLDP
 
+> 2.1.a. Введите соответствующую команду lldp run, чтобы включить LLDP на всех устройствах в топологии
+
+Выполнено.
+
+> 2.1.b. На S1 выполните соответствующую команду lldp, чтобы предоставить подробную информацию о S2.
+
+```shell
+S1#show lldp entry S2
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+------------------------------------------------
+Local Intf: Fa0/1
+Chassis id: 1c1d.8686.1d80
+Port id: Fa0/1
+Port Description: FastEthernet0/1
+System Name: S2
+System Description: 
+Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.2(2)E9, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Sat 08-Sep-18 16:34 by prod_rel_team
+Time remaining: 113 seconds
+System Capabilities: B
+Enabled Capabilities: B
+Management Addresses:
+    IP: 10.22.0.3
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+Media Attachment Unit type: 16
+Vlan ID: 1
+          
+          
+Total entries displayed: 1
+```
+
+> Что такое chassis ID  для коммутатора S2?
+
+Судя по всему - это MAC-адрес порта fa0/1 на S2, но уменьшенный на 1
+
+```shell
+S2#show interfaces fa0/1            
+FastEthernet0/1 is up, line protocol is up (connected) 
+  Hardware is Fast Ethernet, address is 1c1d.8686.1d81 (bia 1c1d.8686.1d81)
+```
+
+> 1.1.a. Соединитесь через консоль на всех устройствах и используйте команды LLDP, 
+ необходимые для отображения топологии физической сети только из выходных данных команды show
+
+```shell
+R1#show lldp neighbors 
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID           Local Intf     Hold-time  Capability      Port ID
+S1                  Gi0/0/1        120        B               Fa0/5
+Total entries displayed: 1
+```
+
+```shell
+S1#show lldp neighbors 
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID           Local Intf     Hold-time  Capability      Port ID
+S2                  Fa0/1          120        B               Fa0/1
+R1                  Fa0/5          120        R               Gi0/0/1
+Total entries displayed: 2
+```
+
+```shell
+S2#show lldp neighbors        
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID           Local Intf     Hold-time  Capability      Port ID
+S1                  Fa0/1          120        B               Fa0/1
+Total entries displayed: 1
+```
+
 # <a name="part4"></a>Часть 4. Настройка и проверка NTP
