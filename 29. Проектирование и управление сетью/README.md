@@ -235,3 +235,114 @@ Total entries displayed: 1
 ```
 
 # <a name="part4"></a>Часть 4. Настройка и проверка NTP
+## Шаг 2.1. Выведите на экран текущее время.
+
+> Введите команду show clock для отображения текущего времени на R1.
+  Запишите отображаемые сведения о текущем времени в следующей таблице
+
+| Дата          | Время              | Часовой пояс    | Источник времени   |
+| ------------- | :----------------: | :-------------: | :----------------- |
+| Nov 17        | 17:59:39.900 2021  | UTC             | —                  |
+
+## Шаг 2.2. Установите время
+
+> С помощью команды clock set установите время на маршрутизаторе R1. Введенное время должно быть в формате UTC
+
+```shell
+R1#clock set 20:58:00 17 Nov 2021 
+*Nov 17 20:58:00.000: %SYS-6-CLOCKUPDATE: System clock has been updated from 18:03:59 UTC Wed Nov 17 2021 to 20:58:00 UTC Wed Nov 17 2021, configured from console by consol
+```
+
+## Шаг 2.3. Настройте главный сервер NTP
+
+> Настройте R1 в качестве хозяина NTP с уровнем слоя 4
+
+```shell
+R1(config)#ntp server 10.22.0.1
+R1(config)#int g0/0/1
+R1(config-if)#ntp broadcast
+R1(config)#end
+R1#show clock detail
+21:11:51.844 UTC Wed Nov 17 2021
+Time source is NTP
+```
+
+## Шаг 2.4. Настройте клиент NTP
+
+> 2.4.a. Выполните соответствующую команду на S1 и S2, чтобы просмотреть настроенное время. Запишите текущее время,  в следующей таблице
+
+| Устройство | Дата          | Время              | Часовой пояс    |
+| :--------- | ------------- | :----------------: | :-------------: |
+| S1         | Mar 1 1993    | 00:59:02.240       | UTC             |
+| S2         | Mar 1 1993    | 01:06:39.755       | UTC             |
+
+> 2.4.b. Настройте S1 и S2 в качестве клиентов NTP. 
+  Используйте соответствующие команды NTP для получения времени от интерфейса G0/0/1 R1, 
+ а также для периодического обновления календаря или аппаратных часов коммутатора
+
+```shell
+S1(config)#ntp server 10.22.0.1
+```
+
+```shell
+S2(config)#ntp server 10.22.0.1
+```
+
+## Шаг 2.5. Проверьте настройку NTP
+
+> 2.5.a. Используйте соответствующую команду show , чтобы убедиться, что S1 и S2 синхронизированы с R1
+
+```shell
+S1#show ntp status
+Clock is synchronized, stratum 5, reference is 10.22.0.1      
+nominal freq is 119.2092 Hz, actual freq is 119.2688 Hz, precision is 2**19
+ntp uptime is 175300 (1/100 of seconds), resolution is 8403
+reference time is E53FB079.B903DB0D (16:46:49.722 UTC Wed Nov 17 2021)
+clock offset is -0.6093 msec, root delay is 2.21 msec
+root dispersion is 7940.93 msec, peer dispersion is 3938.24 msec
+loopfilter state is 'CTRL' (Normal Controlled Loop), drift is -0.000499999 s/s
+system poll interval is 64, last update was 11 sec ago.
+
+S1#show ntp associations 
+  address         ref clock       st   when   poll reach  delay  offset   disp
+*~10.22.0.1       127.127.1.1      4      1     64     1  2.211  -0.609 1938.4
+ * sys.peer, # selected, + candidate, - outlyer, x falseticker, ~ configured
+```
+
+```shell
+S2#show ntp status
+Clock is synchronized, stratum 5, reference is 10.22.0.1      
+nominal freq is 119.2092 Hz, actual freq is 119.2139 Hz, precision is 2**19
+ntp uptime is 144400 (1/100 of seconds), resolution is 8403
+reference time is E53FAFCE.D406353B (16:43:58.828 UTC Wed Nov 17 2021)
+clock offset is -0.3431 msec, root delay is 1.75 msec
+root dispersion is 7941.26 msec, peer dispersion is 1938.73 msec
+loopfilter state is 'CTRL' (Normal Controlled Loop), drift is -0.000038741 s/s
+system poll interval is 64, last update was 46 sec ago.
+
+S2#show ntp associations 
+  address         ref clock       st   when   poll reach  delay  offset   disp
+*~10.22.0.1       127.127.1.1      4     13     64     1  1.752  -0.343 1938.7
+ * sys.peer, # selected, + candidate, - outlyer, x falseticker, ~ configured
+```
+
+> 2.5.b. Выполните соответствующую команду на S1 и S2, чтобы просмотреть настроенное время и сравнить ранее записанное время
+
+```shell
+S1#show clock detail 
+16:48:10.368 UTC Wed Nov 17 2021
+Time source is NTP
+```
+
+```shell
+S2#show clock detail 
+16:48:10.844 UTC Wed Nov 17 2021
+Time source is NTP
+```
+
+# Вопрос для повторения
+
+> Для каких интерфейсов в пределах сети не следует использовать протоколы обнаружения сетевых ресурсов? Поясните ответ
+
+Точно не стоит использовать для тех, которые подключены к конечным устройствам.
+Но в идеале, если нет острой необходимости, то стоит отключить везде.
