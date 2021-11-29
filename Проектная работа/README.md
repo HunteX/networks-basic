@@ -105,6 +105,7 @@ TODO
 | 40     | Servers          |
 | 99     | Management       |
 | 100    | Native           |
+| 1000   | ParkingLot       |
 
 # <a name="devices"></a>Устройства
 TODO
