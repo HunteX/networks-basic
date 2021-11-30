@@ -23,8 +23,20 @@
 |                      | Fa0/1      | 30       |              |                 |                   |
 |                      | G0/1       | Trunk    |              |                 |                   |
 | MAIN-DIST-SW-01      |            |          |              |                 |                   |
+|                      | G1/0/3     | Trunk    |              |                 |                   |
+|                      | G1/0/4     | Trunk    |              |                 |                   |
+|                      | G1/0/7     | Trunk    |              |                 |                   |
+|                      | G1/0/8     | Trunk    |              |                 |                   |
 | MAIN-DIST-SW-02      |            |          |              |                 |                   |
+|                      | G1/0/3     | Trunk    |              |                 |                   |
+|                      | G1/0/4     | Trunk    |              |                 |                   |
+|                      | G1/0/5     | Trunk    |              |                 |                   |
+|                      | G1/0/6     | Trunk    |              |                 |                   |
 | MAIN-DIST-SW-03      |            |          |              |                 |                   |
+|                      | G1/0/5     | Trunk    |              |                 |                   |
+|                      | G1/0/6     | Trunk    |              |                 |                   |
+|                      | G1/0/7     | Trunk    |              |                 |                   |
+|                      | G1/0/8     | Trunk    |              |                 |                   |
 | MAIN-DIST-GW-01      |            |          |              |                 |                   |
 | MAIN-DIST-GW-02      |            |          |              |                 |                   |
 | MAIN-CORE-GW-01      |            |          |              |                 |                   |
