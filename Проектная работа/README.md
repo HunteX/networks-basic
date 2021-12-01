@@ -41,11 +41,10 @@
 | MAIN-DIST-GW-02      |            |          |              |                 |                   |
 | MAIN-CORE-GW-01      |            |          |              |                 |                   |
 | MAIN-CORE-GW-02      |            |          |              |                 |                   |
-| MAIN-USERS-PC-01     |            |          |              |                 |                   |
-| MAIN-USERS-PC-02     |            |          |              |                 |                   |
-| MAIN-HEADS-LAPTOP-01 |            |          |              |                 |                   |
-| MAIN-SRV-WEB-01      |            |          |              |                 |                   |
-| MAIN-SRV-DHCP-01     |            |          |              |                 |                   |
+| MAIN-USERS-PC-01     | Fa0        | 10       | DHCP         | 255.255.255.0   | 10.1.10.11        |
+| MAIN-USERS-PC-02     | Fa0        | 10       | DHCP         | 255.255.255.0   | 10.1.10.11        |
+| MAIN-HEADS-LAPTOP-01 | Fa0        | 30       | DHCP         | 255.255.255.0   | 10.1.30.12        |
+| MAIN-SRV-WEB-01      | Gig0       | 40       | 10.1.40.10   | 255.255.255.0   | 10.1.40.13        |
 
 # <a name="table2"></a>Таблица адресации "Новый офис"
 | Устройство       | Интерфейс  |   VLAN   |  IP-адрес    | Маска подсети   | Шлюз по умолчанию |
